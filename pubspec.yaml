@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts: ^2.0.0
   responsive_grid: ^2.0.0
   url_strategy: ^0.2.0
   firebase: ^9.0.1
@@ -37,6 +36,7 @@ dependencies:
   uuid: ^3.0.4
   flip_card: ^0.5.0
   shared_preferences: ^2.0.8
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:

@@ -12,7 +12,7 @@ ThemeData applicationTheme(context) {
   final textTheme = Theme.of(context).textTheme;
   return ThemeData(
       primaryColor: const Color(0xff193D9F),
-      accentColor: Colors.blueGrey,
+      selectedRowColor: Colors.blueGrey,
       dividerColor: Colors.grey[300],
       highlightColor: const Color(0xffFFD6DA),
       primaryColorDark: const Color(0xff07144B),

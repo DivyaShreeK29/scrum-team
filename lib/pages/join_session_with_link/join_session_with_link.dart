@@ -3,7 +3,6 @@ import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/pages/landing/page_widgets/join_an_existing_session.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 
 class JoinSessionFromLink extends StatefulWidget {
   final String id;

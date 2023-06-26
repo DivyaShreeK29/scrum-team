@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrum_poker/theme/theme.dart';
-import 'package:scrum_poker/widgets/ui/animatable/animation_constant.dart';
-import 'package:scrum_poker/widgets/ui/responsive_widget.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
-import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 
 Widget pageHeader(BuildContext context) {
   return AppBar(
