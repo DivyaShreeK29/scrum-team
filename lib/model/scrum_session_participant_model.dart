@@ -1,8 +1,13 @@
+import 'dart:async';
+
 class ScrumSessionParticipant {
   String id = newID();
   String name = "";
   bool isOwner = false;
   String? currentEstimate;
+  late StreamController<bool> connectivityController =
+      StreamController<bool>.broadcast();
+
   ScrumSessionParticipant(name, isOwner, id, currentEstimate) {
     this.name = name;
     this.id = id;

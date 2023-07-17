@@ -1,5 +1,10 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
@@ -14,6 +19,7 @@ import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
+
 import 'package:fluttertoast/fluttertoast.dart';
 // ignore: avoid_web_libraries_in_flutter
 //import 'dart:html' as html;
@@ -60,6 +66,9 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  late StreamSubscription subscription;
+  var isDeviceConnected = false;
+  bool isAlertSet = false;
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -76,11 +85,33 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
+    getConnectivity();
     browserEventListeners();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
     //set callbacks into the session
+  }
+
+  void getConnectivity() async {
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      isDeviceConnected = await InternetConnectionChecker().hasConnection;
+      print("-------isDeviceConnected-------$isDeviceConnected");
+      if (!isDeviceConnected && isAlertSet == false) {
+        showDialogBox();
+        setState(() {
+          isAlertSet = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
   void browserEventListeners() {
@@ -96,6 +127,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     });
     window.onOffline.listen((event) {
       print("inside offline");
+
       onNewParticipantRemoved(scrumSession?.activeParticipant);
     });
     window.onOnline.listen((Event event) async {
@@ -314,5 +346,14 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         ),
       ),
     );
+  }
+
+  void showDialogBox() {
+    showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+              title: const Text('No Connection'),
+              content: const Text('Please check your internet connectivity'),
+            ));
   }
 }

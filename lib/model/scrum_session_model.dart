@@ -58,6 +58,12 @@ class ScrumSession {
     //this.participants.removeWhere((element) => (element.id) == participant.id);
   }
 
+  void updateParticipantConnectivity(
+      ScrumSessionParticipant? participant, bool isConnected) {
+    final part = this.participants.firstWhere((p) => p == participant);
+    part.connectivityController.add(isConnected);
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
