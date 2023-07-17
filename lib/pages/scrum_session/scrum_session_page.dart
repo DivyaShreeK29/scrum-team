@@ -85,6 +85,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   void browserEventListeners() {
     window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload get triggered");
+
+      //event.preventDefault();
+      // event.="Are you sure you want to leave thsis page???";
+      //window.confirm();
+
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       spfb.removeFromExistingSession();
     });
@@ -297,7 +303,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     scaffoldMessengerKey.currentState!.showSnackBar(
       SnackBar(
         content: Text('${oldParticipant.name} left the session'),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 10),
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
