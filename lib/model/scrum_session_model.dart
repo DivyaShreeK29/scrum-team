@@ -1,4 +1,7 @@
 //import 'package:scrum_poker/main.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
@@ -58,10 +61,54 @@ class ScrumSession {
     //this.participants.removeWhere((element) => (element.id) == participant.id);
   }
 
-  void updateParticipantConnectivity(
+  void updateParticipantConnectivity(BuildContext context,
       ScrumSessionParticipant? participant, bool isConnected) {
-    final part = this.participants.firstWhere((p) => p == participant);
-    part.connectivityController.add(isConnected);
+    print(participant?.name);
+
+    ScrumSessionParticipant part = this.participants.elementAt(
+        this.participants.indexWhere((p) => p.id == (participant?.id)));
+    part.connectivityController = isConnected;
+    print("=====participant----------${part.connectivityController}");
+    //part.connectivityController = isConnected;
+    //print(
+    //   "Inside update participant is connected ${part.connectivityController}");
+    if (part.id == this.activeParticipant?.id) {
+      if (!part.connectivityController) {
+        //print("Inside show dialog if block ${part.connectivityController}");
+        //{**}
+        showAboutDialog(context);
+      } else {
+        dismissDialog(context);
+        //print("Inside show dialog else block ${part.connectivityController}");
+      }
+    }
+  }
+
+  void showAboutDialog(
+    BuildContext context,
+  ) {
+    showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('You lost your network connection'),
+              content: const Text('Trying to reconnect '),
+
+              // actions: <Widget>[
+              //   TextButton(
+              //     onPressed: () => Navigator.pop(context, 'Cancel'),
+              //     child: const Text('Cancel'),
+              //   ),
+              //   TextButton(
+              //     onPressed: () => Navigator.pop(context, 'OK'),
+              //     child: const Text('OK'),
+              //   ),
+              // ],
+            ));
+  }
+
+  void dismissDialog(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
   Map<String, dynamic> toJson() => {

@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+//import 'package:internet_connection_checker/internet_connection_checker.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
@@ -26,11 +24,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 //html.Element? appElement; // Reference to your app element
 
-void showToastMessage() {
+void showToastMessage(String msg) {
   // Replace with your own toast implementation or package
 
   Fluttertoast.showToast(
-    msg: "Host has exited",
+    msg: msg,
     toastLength:
         Toast.LENGTH_SHORT, // Duration for which the toast should be visible
     gravity: ToastGravity
@@ -66,9 +64,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  late StreamSubscription subscription;
-  var isDeviceConnected = false;
-  bool isAlertSet = false;
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -86,32 +81,24 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     super.initState();
     initializeScrumSession();
     getConnectivity();
-    browserEventListeners();
+    //browserEventListeners();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
     //set callbacks into the session
   }
 
-  void getConnectivity() async {
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
-      isDeviceConnected = await InternetConnectionChecker().hasConnection;
-      print("-------isDeviceConnected-------$isDeviceConnected");
-      if (!isDeviceConnected && isAlertSet == false) {
-        showDialogBox();
-        setState(() {
-          isAlertSet = true;
-        });
-      }
+  void getConnectivity() {
+    Connectivity().onConnectivityChanged.listen((result) {
+      setState(() {
+        //var _connectivityResult = result;
+        bool isConnected = result != ConnectivityResult.none;
+        print("=============$result");
+        print("=============$isConnected");
+        this.scrumSession?.updateParticipantConnectivity(
+            context, scrumSession?.activeParticipant, isConnected);
+      });
     });
-  }
-
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
   }
 
   void browserEventListeners() {
@@ -122,35 +109,40 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       // event.="Are you sure you want to leave thsis page???";
       //window.confirm();
 
-      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
-      spfb.removeFromExistingSession();
+      // ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      // spfb.removeFromExistingSession();
     });
     window.onOffline.listen((event) {
-      print("inside offline");
-
-      onNewParticipantRemoved(scrumSession?.activeParticipant);
+      showSnackbar(
+          "${scrumSession?.activeParticipant?.name} lost network connection");
+      //{do this inside updateParticipantConnectivity**}
+//set timer
+      // onNewParticipantRemoved(scrumSession?.activeParticipant);
+      //}
     });
-    window.onOnline.listen((Event event) async {
+    window.onOnline.listen((Event event) {
       // Internet connection is regained, handle it here
       // take the participants json from db and update the participants list and setstate
-      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
-      DataSnapshot participantsJson = await spfb.participants;
+      showSnackbar(
+          "${scrumSession!.activeParticipant?.name} restored network connection");
+      //   ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      //   DataSnapshot participantsJson = await spfb.participants;
 
-      Map _participantsListJson = participantsJson.value as Map;
+      //   Map _participantsListJson = participantsJson.value as Map;
 
-      var listOfParticipants = _participantsListJson.values
-          .map((participant) => ScrumSessionParticipant.fromJSON(participant))
-          .toList();
+      //   var listOfParticipants = _participantsListJson.values
+      //       .map((participant) => ScrumSessionParticipant.fromJSON(participant))
+      //       .toList();
 
-      print("values = ${participantsJson.value}");
+      //   print("values = ${participantsJson.value}");
 
-      listOfParticipants.forEach((element) {
-        print("in for each ${element.toJson()}");
-      });
-      print(listOfParticipants);
-      setState(() {
-        scrumSession!.participants = listOfParticipants;
-      });
+      //   listOfParticipants.forEach((element) {
+      //     print("in for each ${element.toJson()}");
+      //   });
+      //   print(listOfParticipants);
+      //   setState(() {
+      //     scrumSession!.participants = listOfParticipants;
+      //   });
     });
   }
 
@@ -190,7 +182,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     // } else {
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant!);
-      showSnackbar(oldParticipant!);
+      showSnackbar('${oldParticipant!.name} left the session');
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //     duration: const Duration(seconds: 3),
@@ -331,10 +323,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
             []);
   }
 
-  void showSnackbar(ScrumSessionParticipant oldParticipant) {
+  void showSnackbar(String msg) {
     scaffoldMessengerKey.currentState!.showSnackBar(
       SnackBar(
-        content: Text('${oldParticipant.name} left the session'),
+        content: Text(msg),
         duration: Duration(seconds: 10),
         action: SnackBarAction(
           label: 'Close',
