@@ -157,6 +157,8 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner = false}) async {
+    UserCredential user = await authenticate.signInWithEmailAndPassword(
+        email: "jay@scrumpoker.com", password: "asdfgh");
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
 
@@ -332,6 +334,8 @@ class ScrumPokerFirebase {
           .child("participants")
           .child(participantKey)
           .remove();
+
+      removeAllDataFromSharedPreferences();
     }
   }
 
@@ -394,8 +398,9 @@ void saveActiveParticipant(
 //   });
 //   return jsonMap;
 // }
-//Future<void> removeExistingSession() async {}
+//Future<void> removeExistingSession() async
 
-
-
-
+void removeAllDataFromSharedPreferences() async {
+  print("Inside removeALldata");
+  await preferences?.clear();
+}

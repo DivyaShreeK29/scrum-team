@@ -36,10 +36,10 @@ Widget joinAnExistingSession(
                     if (!joinWithLink)
                       TextFormField(
                         controller: existingSessionController,
-                        decoration: InputDecoration(
-                            hintText: "Enter the name of the session"),
+                        decoration:
+                            InputDecoration(hintText: "Enter the session URL"),
                         validator: (value) {
-                          if (value!.isEmpty) {
+                          if (value!.isEmpty && value == scrumSession?.id) {
                             return 'Session name is required';
                           }
                           return null;
@@ -57,6 +57,9 @@ Widget joinAnExistingSession(
                           return null;
                         },
                       ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Center(
                         child: TextButton(
                             onPressed: () async {
@@ -65,18 +68,21 @@ Widget joinAnExistingSession(
                                 if (joinWithLink) {
                                   sessionId = scrumSession!.id!;
                                 }
-                                ScrumPokerFirebase spfb =
-                                    await ScrumPokerFirebase.instance;
-                                await spfb.joinScrumSession(
-                                    participantName:
-                                        participantNameController.text,
-                                    sessionId: sessionId,
-                                    owner: false);
+                                if (!joinWithLink ||
+                                    (joinWithLink && scrumSession != null)) {
+                                  ScrumPokerFirebase spfb =
+                                      await ScrumPokerFirebase.instance;
+                                  await spfb.joinScrumSession(
+                                      participantName:
+                                          participantNameController.text,
+                                      sessionId: sessionId,
+                                      owner: false);
 
-                                routerDelegate.pushRoute("/home/$sessionId");
+                                  routerDelegate.pushRoute("/home/$sessionId");
+                                }
                               }
                             },
-                            child: Text("JOINED NO ASYNC"))),
+                            child: Text("JOIN"))),
                   ]),
             ))),
     width: 500,

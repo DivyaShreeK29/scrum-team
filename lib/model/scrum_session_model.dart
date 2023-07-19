@@ -61,26 +61,25 @@ class ScrumSession {
     //this.participants.removeWhere((element) => (element.id) == participant.id);
   }
 
-  void updateParticipantConnectivity(BuildContext context,
-      ScrumSessionParticipant? participant, bool isConnected) {
-    print(participant?.name);
+  void updateParticipantConnectivity(BuildContext context, bool isConnected) {
+    print(this.activeParticipant?.name);
 
-    ScrumSessionParticipant part = this.participants.elementAt(
-        this.participants.indexWhere((p) => p.id == (participant?.id)));
-    part.connectivityController = isConnected;
-    print("=====participant----------${part.connectivityController}");
+    // ScrumSessionParticipant part = this.participants.elementAt(
+    //     this.participants.indexWhere((p) => p.id == (participant?.id)));
+    activeParticipant?.connectivityController = isConnected;
+    print(
+        "=====participant----------${activeParticipant?.connectivityController}");
     //part.connectivityController = isConnected;
     //print(
     //   "Inside update participant is connected ${part.connectivityController}");
-    if (part.id == this.activeParticipant?.id) {
-      if (!part.connectivityController) {
-        //print("Inside show dialog if block ${part.connectivityController}");
-        //{**}
-        showAboutDialog(context);
-      } else {
-        dismissDialog(context);
-        //print("Inside show dialog else block ${part.connectivityController}");
-      }
+
+    if (!activeParticipant!.connectivityController) {
+      //print("Inside show dialog if block ${part.connectivityController}");
+      //{**}
+      showAboutDialog(context);
+    } else {
+      dismissDialog(context);
+      //print("Inside show dialog else block ${part.connectivityController}");
     }
   }
 

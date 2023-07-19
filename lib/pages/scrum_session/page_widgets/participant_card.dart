@@ -62,8 +62,11 @@ import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 //   ).fadeInOut();
 // }
 
-Widget participantCard(BuildContext context,
-    ScrumSessionParticipant participant, bool showEstimates) {
+Widget participantCard(
+    BuildContext context,
+    ScrumSessionParticipant participant,
+    bool showEstimates,
+    bool isOfflineProgressIndicator) {
   return AnimatedContainer(
       duration: Duration(milliseconds: 200),
       curve: Curves.easeIn,
@@ -131,8 +134,22 @@ Widget participantCard(BuildContext context,
                         ),
                       ),
                     ),
-                    body1(context: context, text: participant.name)
-                        .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+                    // body1(context: context, text: participant.name)
+                    //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        body1(context: context, text: participant.name)
+                            .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        isOfflineProgressIndicator
+                            ? CircularProgressIndicator()
+                            : Text(""),
+                      ],
+                    )
                   ],
                 ),
               ),

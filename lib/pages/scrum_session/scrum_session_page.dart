@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +21,8 @@ import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
 
 import 'package:fluttertoast/fluttertoast.dart';
+
+//import '../connectivity/connectivity.dart';
 // ignore: avoid_web_libraries_in_flutter
 //import 'dart:html' as html;
 
@@ -64,6 +68,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  bool isOfflineProgressIndicator = false;
+  //ConnectivityService connectivityService = ConnectivityService();
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -80,6 +86,14 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
+    // connectivityService.startMonitoring((participants) {
+    //   setState(() {
+    //     this.scrumSession?.participants =
+    //         participants as List<ScrumSessionParticipant>;
+    //     this.scrumSession?.updateParticipantConnectivity(context);
+    //   });
+    // });
+
     getConnectivity();
     //browserEventListeners();
     //appElement =
@@ -90,13 +104,54 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   void getConnectivity() {
     Connectivity().onConnectivityChanged.listen((result) {
+      //var _connectivityResult = result;
+      bool isConnected = result != ConnectivityResult.none;
+      print("=============$result");
+      print("=============$isConnected");
+
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          isOfflineProgressIndicator = !isConnected;
+        });
+
+        showSnackbar(
+            "${scrumSession?.activeParticipant?.name} lost network connection");
+        Timer(Duration(seconds: 20), () {
+          print("Executed after 1 minute");
+          if (!isConnected) {
+            print("Executed after 1 minute if olgade");
+            this.onNewParticipantRemoved(scrumSession!.activeParticipant!);
+          }
+        });
+      }
+      if (result == ConnectivityResult.wifi) {
+        isOfflineProgressIndicator = !isConnected;
+        showSnackbar(
+            "${scrumSession!.activeParticipant?.name} restored network connection");
+
+        () async {
+          ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+          DataSnapshot participantsJson = await spfb.participants;
+          Map _participantsListJson = participantsJson.value as Map;
+
+          var listOfParticipants = _participantsListJson.values
+              .map((participant) =>
+                  ScrumSessionParticipant.fromJSON(participant))
+              .toList();
+
+          print("values = ${participantsJson.value}");
+
+          listOfParticipants.forEach((element) {
+            print("in for each ${element.toJson()}");
+          });
+          print(listOfParticipants);
+          setState(() {
+            scrumSession!.participants = listOfParticipants;
+          });
+        }();
+      }
       setState(() {
-        //var _connectivityResult = result;
-        bool isConnected = result != ConnectivityResult.none;
-        print("=============$result");
-        print("=============$isConnected");
-        this.scrumSession?.updateParticipantConnectivity(
-            context, scrumSession?.activeParticipant, isConnected);
+        this.scrumSession?.updateParticipantConnectivity(context, isConnected);
       });
     });
   }
@@ -109,15 +164,15 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       // event.="Are you sure you want to leave thsis page???";
       //window.confirm();
 
-      // ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
-      // spfb.removeFromExistingSession();
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      spfb.removeFromExistingSession();
     });
     window.onOffline.listen((event) {
       showSnackbar(
           "${scrumSession?.activeParticipant?.name} lost network connection");
       //{do this inside updateParticipantConnectivity**}
 //set timer
-      // onNewParticipantRemoved(scrumSession?.activeParticipant);
+      onNewParticipantRemoved(scrumSession?.activeParticipant);
       //}
     });
     window.onOnline.listen((Event event) {
@@ -125,24 +180,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       // take the participants json from db and update the participants list and setstate
       showSnackbar(
           "${scrumSession!.activeParticipant?.name} restored network connection");
-      //   ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
-      //   DataSnapshot participantsJson = await spfb.participants;
-
-      //   Map _participantsListJson = participantsJson.value as Map;
-
-      //   var listOfParticipants = _participantsListJson.values
-      //       .map((participant) => ScrumSessionParticipant.fromJSON(participant))
-      //       .toList();
-
-      //   print("values = ${participantsJson.value}");
-
-      //   listOfParticipants.forEach((element) {
-      //     print("in for each ${element.toJson()}");
-      //   });
-      //   print(listOfParticipants);
-      //   setState(() {
-      //     scrumSession!.participants = listOfParticipants;
-      //   });
     });
   }
 
@@ -317,17 +354,18 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants
-                .map((participant) =>
-                    participantCard(context, participant, showEstimates))
+                .map((participant) => participantCard(context, participant,
+                    showEstimates, isOfflineProgressIndicator))
                 .toList() ??
             []);
   }
 
   void showSnackbar(String msg) {
+    scaffoldMessengerKey.currentState!.clearSnackBars();
     scaffoldMessengerKey.currentState!.showSnackBar(
       SnackBar(
         content: Text(msg),
-        duration: Duration(seconds: 10),
+        duration: Duration(seconds: 5),
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
@@ -340,12 +378,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     );
   }
 
-  void showDialogBox() {
-    showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-              title: const Text('No Connection'),
-              content: const Text('Please check your internet connectivity'),
-            ));
-  }
+  // void showDialogBox() {
+  //   showCupertinoDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => CupertinoAlertDialog(
+  //             title: const Text('No Connection'),
+  //             content: const Text('Please check your internet connectivity'),
+  //           ));
+  // }
 }
