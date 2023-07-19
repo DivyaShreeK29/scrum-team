@@ -1,7 +1,7 @@
-import 'dart:async';
-
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import 'package:internet_connection_checker/internet_connection_checker.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
@@ -16,6 +16,29 @@ import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
+import 'package:fluttertoast/fluttertoast.dart';
+// ignore: avoid_web_libraries_in_flutter
+//import 'dart:html' as html;
+
+//html.Element? appElement; // Reference to your app element
+
+void showToastMessage() {
+  // Replace with your own toast implementation or package
+
+  Fluttertoast.showToast(
+    msg: "Host has exited",
+    toastLength:
+        Toast.LENGTH_SHORT, // Duration for which the toast should be visible
+    gravity: ToastGravity
+        .BOTTOM_RIGHT, // Position of the toast message on the screen
+    timeInSecForIosWeb:
+        5, // Specific to iOS/web platforms, the duration for which the toast should be visible
+    backgroundColor: Colors.black87, // Background color of the toast message
+    textColor: Colors.white, // Text color of the toast message
+    fontSize: 16.0, // Font size of the toast message
+  );
+  //print("Host has exited");
+}
 
 class ScrumSessionPage extends StatefulWidget {
   final String id;
@@ -38,8 +61,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  bool _isOffline = true;
-  bool _isOfflineForProgressIndicator = false;
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -56,40 +77,30 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
+    // connectivityService.startMonitoring((participants) {
+    //   setState(() {
+    //     this.scrumSession?.participants =
+    //         participants as List<ScrumSessionParticipant>;
+    //     this.scrumSession?.updateParticipantConnectivity(context);
+    //   });
+    // });
+
+    getConnectivity();
     browserEventListeners();
   }
 
   void browserEventListeners() {
     window.onBeforeUnload.listen((event) async {
-      event.preventDefault();
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       spfb.removeFromExistingSession();
     });
     window.onOffline.listen((event) {
       print("inside offline");
-      setState(() {
-        print(_isOffline);
-        _isOfflineForProgressIndicator = true;
-      });
-
-      showSnackbarMsg("${scrumSession!.activeParticipant!.name} is offline");
-      Timer(Duration(seconds: 20), () {
-        print("Executed after 1 minute");
-        if (_isOffline) {
-          print("Executed after 1 minute if olgade");
-          this.onNewParticipantRemoved(scrumSession!.activeParticipant!);
-        }
-      });
-      print("+=+");
-      _isOffline = true;
-      print('-=-');
+      onNewParticipantRemoved(scrumSession!.activeParticipant);
     });
     window.onOnline.listen((Event event) async {
       // Internet connection is regained, handle it here
       // take the participants json from db and update the participants list and setstate
-      print("inside online");
-      _isOffline = false;
-      _isOfflineForProgressIndicator = false;
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       DataSnapshot participantsJson = await spfb.participants;
 
@@ -98,7 +109,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       var listOfParticipants = _participantsListJson.values
           .map((participant) => ScrumSessionParticipant.fromJSON(participant))
           .toList();
-      () async {}();
 
       print("values = ${participantsJson.value}");
 
@@ -109,8 +119,34 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       setState(() {
         scrumSession!.participants = listOfParticipants;
       });
-      showSnackbarMsg("${scrumSession!.activeParticipant!.name} is online");
     });
+  }
+
+  void browserEventListeners() {
+    window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload get triggered");
+
+      //event.preventDefault();
+      // event.="Are you sure you want to leave thsis page???";
+      //window.confirm();
+
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      spfb.removeFromExistingSession();
+    });
+//     window.onOffline.listen((event) {
+//       showSnackbar(
+//           "${scrumSession?.activeParticipant?.name} lost network connection");
+//       //{do this inside updateParticipantConnectivity**}
+// //set timer
+//       onNewParticipantRemoved(scrumSession?.activeParticipant);
+//       //}
+//     });
+//     window.onOnline.listen((Event event) {
+//       // Internet connection is regained, handle it here
+//       // take the participants json from db and update the participants list and setstate
+//       showSnackbar(
+//           "${scrumSession!.activeParticipant?.name} restored network connection");
+//     });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
@@ -139,12 +175,34 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     showSnackbarMsg("${newParticipant.name} has joined the session.");
   }
 
-  void onNewParticipantRemoved(ScrumSessionParticipant oldParticipant) {
+  void onNewParticipantRemoved(oldParticipant) {
+    // print(
+    //     "_______________________________----------------____________________-");
+
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant);
+      showSnackbar(oldParticipant);
+
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //     duration: const Duration(seconds: 3),
+      //     content: Text("${oldParticipant.name} left the session"),
+      //     action: SnackBarAction(
+      //       label: 'DISMISS',
+      //       onPressed: () {
+      //         // Some code to undo the change.
+      //       },
+      //     )));
+      // print(
+      //     "_______________________________----------------____________________-");
     });
-    showSnackbarMsg("${oldParticipant.name} has left the session.");
-    // widget.routerDelegate!.pushRoute("/session-ended");
+    print(oldParticipant);
+    // ScrumSessionParticipant sp = oldParticipant;
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     duration: const Duration(seconds: 3),
+    //     content: Text("${oldParticipant.name}"),
+    //   ),
+    // );
   }
 
   void onEndSession() {
@@ -226,7 +284,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(children: [
-      pageHeader(context, scrumSession, scrumSession?.activeParticipant),
+      pageHeader(context, scrumSession, scrumSession?.activeParticipant,
+          widget.routerDelegate),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
               context,
@@ -256,18 +315,17 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants
-                .map((participant) => participantCard(context, participant,
-                    showEstimates, _isOfflineForProgressIndicator))
+                .map((participant) =>
+                    participantCard(context, participant, showEstimates))
                 .toList() ??
             []);
   }
 
-  void showSnackbarMsg(String msg) {
-    scaffoldMessengerKey.currentState!.clearSnackBars();
+  void showSnackbar(ScrumSessionParticipant oldParticipant) {
     scaffoldMessengerKey.currentState!.showSnackBar(
       SnackBar(
-        content: Text(msg),
-        duration: Duration(seconds: 10),
+        content: Text('${oldParticipant.name} left the session'),
+        duration: Duration(seconds: 2),
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
@@ -279,4 +337,13 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       ),
     );
   }
+
+  // void showDialogBox() {
+  //   showCupertinoDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => CupertinoAlertDialog(
+  //             title: const Text('No Connection'),
+  //             content: const Text('Please check your internet connectivity'),
+  //           ));
+  // }
 }

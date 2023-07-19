@@ -22,10 +22,9 @@ Widget startNewSession(BuildContext context, AppRouterDelegate routerDelegate) {
               SizedBox(height: 10),
               body1(
                 context: context,
-                text:
-                    "Provide a name for the session and press start to start the session",
+                text: "Provide a name for the session and press Start",
               ),
-              SizedBox(height: 20),
+              // SizedBox(height: 20),
               TextFormField(
                 controller: newSessionController,
                 decoration:
@@ -48,7 +47,7 @@ Widget startNewSession(BuildContext context, AppRouterDelegate routerDelegate) {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              // SizedBox(height: 20),
               SizedBox(height: 20),
               Center(
                 child: TextButton(

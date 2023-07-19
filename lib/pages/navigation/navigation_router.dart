@@ -45,10 +45,27 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     routeConfig = NavigationUtil.resolveRouteToWidget("/", routerMap);
   }
 
+  get navigator => null;
+
   void pushRoute(String url) {
     this.routeConfig = NavigationUtil.resolveRouteToWidget(url, routerMap);
     this.activePage = this.routeConfig.getPage(this);
     notifyListeners();
+  }
+
+  @override
+  Future<bool> popRoute() {
+    // TODO: implement popRoute
+    final navigatorState = navigatorKey.currentState;
+
+    if (navigatorState != null && navigatorState.canPop()) {
+      // Use the pop method to pop the route
+      navigatorState.pop();
+      return Future.value(
+          true); // Indicate that the route was popped successfully
+    }
+
+    return Future.value(false);
   }
 
   @override
