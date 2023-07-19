@@ -157,9 +157,12 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner = false}) async {
+    print("jss");
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
+    print("jss1");
     if (participant == null) {
+      print("jss${participant}");
       //no active participant stored for this session in shared preferences
       participant = ScrumSessionParticipant(
           participantName, owner, ScrumSessionParticipant.newID(), null);
@@ -169,6 +172,7 @@ class ScrumPokerFirebase {
       this.activeParticipant = participant;
       saveActiveParticipant(sessionId, participant);
     }
+    print("jsso");
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -283,6 +287,7 @@ class ScrumPokerFirebase {
     String participantkey = '';
     var keys = participants.keys;
     for (var key in keys) {
+      print(participants[key]['id']);
       if (participants[key]['id'] == activeParticipant.id) {
         participantkey = key;
         break;
@@ -350,6 +355,9 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   ScrumSession? session;
   String? existingSessionString =
       preferences?.getString(PreferenceKeys.CURRENT_SESSION);
+  print("in geap");
+  print(existingSessionString);
+  print("in geap1");
   String? activeParticipantString =
       preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT);
   if (existingSessionString != null) {
