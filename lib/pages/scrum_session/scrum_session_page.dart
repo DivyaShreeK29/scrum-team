@@ -95,7 +95,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     // });
 
     getConnectivity();
-    //browserEventListeners();
+    browserEventListeners();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
@@ -167,20 +167,20 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       spfb.removeFromExistingSession();
     });
-    window.onOffline.listen((event) {
-      showSnackbar(
-          "${scrumSession?.activeParticipant?.name} lost network connection");
-      //{do this inside updateParticipantConnectivity**}
-//set timer
-      onNewParticipantRemoved(scrumSession?.activeParticipant);
-      //}
-    });
-    window.onOnline.listen((Event event) {
-      // Internet connection is regained, handle it here
-      // take the participants json from db and update the participants list and setstate
-      showSnackbar(
-          "${scrumSession!.activeParticipant?.name} restored network connection");
-    });
+//     window.onOffline.listen((event) {
+//       showSnackbar(
+//           "${scrumSession?.activeParticipant?.name} lost network connection");
+//       //{do this inside updateParticipantConnectivity**}
+// //set timer
+//       onNewParticipantRemoved(scrumSession?.activeParticipant);
+//       //}
+//     });
+//     window.onOnline.listen((Event event) {
+//       // Internet connection is regained, handle it here
+//       // take the participants json from db and update the participants list and setstate
+//       showSnackbar(
+//           "${scrumSession!.activeParticipant?.name} restored network connection");
+//     });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {

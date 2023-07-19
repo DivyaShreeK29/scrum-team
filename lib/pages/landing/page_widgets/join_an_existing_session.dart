@@ -39,6 +39,7 @@ Widget joinAnExistingSession(
                         decoration:
                             InputDecoration(hintText: "Enter the session URL"),
                         validator: (value) {
+                          print("++++++++++++$value");
                           if (value!.isEmpty && value == scrumSession?.id) {
                             return 'Session name is required';
                           }
