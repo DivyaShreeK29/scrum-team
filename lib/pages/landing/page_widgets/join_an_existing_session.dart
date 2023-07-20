@@ -13,79 +13,85 @@ Widget joinAnExistingSession(
   TextEditingController existingSessionController = TextEditingController();
   TextEditingController participantNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String? processedSessionId;
 
   return Container(
     child: Card(
-        child: Padding(
-            padding: EdgeInsets.all(dimensions.standard_padding * 2),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    heading5(
-                        context: context, text: "Join an Existing Session"),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    if (joinWithLink && scrumSession != null)
-                      heading4(context: context, text: scrumSession.name!),
-                    body1(
-                        context: context,
-                        text: getDescription(joinWithLink, scrumSession)),
-                    if (!joinWithLink)
-                      TextFormField(
-                        controller: existingSessionController,
-                        decoration:
-                            InputDecoration(hintText: "Enter the session URL"),
-                        validator: (value) {
-                          print("++++++++++++$value");
-                          if (value!.isEmpty && value == scrumSession?.id) {
-                            return 'Session name is required';
-                          }
-                          return null;
-                        },
-                      ),
-                    if (!joinWithLink || (joinWithLink && scrumSession != null))
-                      TextFormField(
-                        controller: participantNameController,
-                        decoration: InputDecoration(
-                            hintText: "Enter your name or nickname"),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'name or nickname is required';
-                          }
-                          return null;
-                        },
-                      ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                        child: TextButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                var sessionId = existingSessionController.text;
-                                if (joinWithLink) {
-                                  sessionId = scrumSession!.id!;
-                                }
-                                if (!joinWithLink ||
-                                    (joinWithLink && scrumSession != null)) {
-                                  ScrumPokerFirebase spfb =
-                                      await ScrumPokerFirebase.instance;
-                                  await spfb.joinScrumSession(
-                                      participantName:
-                                          participantNameController.text,
-                                      sessionId: sessionId,
-                                      owner: false);
+      child: Padding(
+        padding: EdgeInsets.all(dimensions.standard_padding * 2),
+        child: Form(
+          key: _formKey,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            heading5(context: context, text: "Join an Existing Session"),
+            SizedBox(
+              height: 10,
+            ),
+            if (joinWithLink && scrumSession != null)
+              heading4(context: context, text: scrumSession.name!),
+            body1(
+                context: context,
+                text: getDescription(joinWithLink, scrumSession)),
+            if (!joinWithLink)
+              TextFormField(
+                controller: existingSessionController,
+                decoration: InputDecoration(hintText: "Enter the session URL"),
+                validator: (value) {
+                  print("++++++++++++$value");
+                  if (value!.isEmpty) {
+                    return 'Session link is required';
+                  }
+                  // } else if (value.contains(scrumSession!.id!)) {
+                  //   return 'Session does not exist is required';
+                  // }
 
-                                  routerDelegate.pushRoute("/home/$sessionId");
-                                }
-                              }
-                            },
-                            child: Text("JOIN"))),
-                  ]),
-            ))),
+                  print(value.substring(value.lastIndexOf('/') + 1));
+                  processedSessionId =
+                      value.substring(value.lastIndexOf('/') + 1);
+
+                  return null;
+                },
+              ),
+            TextFormField(
+              controller: participantNameController,
+              decoration:
+                  InputDecoration(hintText: "Enter your name or nickname"),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'name or nickname is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Center(
+                child: TextButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        var sessionId = processedSessionId;
+                        if (joinWithLink) {
+                          sessionId = scrumSession!.id!;
+                        }
+                        if (!joinWithLink) {
+                          ScrumPokerFirebase spfb =
+                              await ScrumPokerFirebase.instance;
+                          await spfb.joinScrumSession(
+                              participantName: participantNameController.text,
+                              sessionId: sessionId!,
+                              owner: false);
+                          print("sessionID= ${sessionId}");
+
+                          routerDelegate.pushRoute("/home/$sessionId");
+                        }
+                      }
+                    },
+                    child: Text("JOIN"))),
+          ]),
+        ),
+      ),
+    ),
     width: 500,
   );
 }

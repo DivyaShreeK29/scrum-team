@@ -17,9 +17,10 @@ class LandingPage extends StatelessWidget {
     return Container(
       color: Colors.blue[900],
       child: Padding(
-          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             AnimatedContainer(
                 duration: Duration(milliseconds: standard_duration),
                 width: 250,
@@ -70,7 +71,9 @@ class LandingPage extends StatelessWidget {
                 ),
               ),
             ),
-          ])),
+          ],
+        ),
+      ),
     );
   }
 }

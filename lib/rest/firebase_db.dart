@@ -55,28 +55,6 @@ class ScrumPokerFirebase {
     return _scrumPokerDB!;
   }
 
-  // static Future<ScrumPokerFirebase> get instance async {
-  //   if (_scrumPokerDB == null) {
-  //     FirebaseOptions appOptions = FirebaseOptions(
-  //         apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
-  //         appId: "1:708840805223:web:3566cd157397d6679455c2",
-  //         messagingSenderId: "708840805223",
-  //         projectId: "scrum-poker-b2819",
-  //         authDomain: "scrum-poker-b2819.firebaseapp.com",
-  //         databaseURL:
-  //             "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  //         measurementId: "G-CH265MWWBG",
-  //         storageBucket: "scrum-poker-b2819.appspot.com");
-  //     FirebaseApp scrumPokerApp =
-  //         await Firebase.initializeApp(options: appOptions);
-  //     //FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
-
-  //     FirebaseDatabase db = FirebaseDatabase.instanceFor(app: scrumPokerApp);
-  //     _scrumPokerDB = ScrumPokerFirebase._(db: db);
-  //   }
-  //   return _scrumPokerDB!;
-  // }
-
   FirebaseDatabase get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
   FirebaseAuth get authenticate => _auth!;
@@ -240,20 +218,6 @@ class ScrumPokerFirebase {
     });
   }
 
-  // Future<void> deleteInstance() async {
-  //   try {
-  //     // Get a reference to the database instance you want to delete
-  //     DatabaseReference databaseRef =
-  //         firebase.database().ref("your-instance-path");
-
-  //     // Remove the instance from the database
-  //     await databaseRef.remove();
-  //   } catch (error) {
-  //     // Handle any errors that occur during the deletion process
-  //     print("Error deleting instance: $error");
-  //   }
-  // }
-
   void setActiveStory(id, title, description) {
     Story newStory = Story(id, title, description, []);
     dbReference
@@ -297,25 +261,9 @@ class ScrumPokerFirebase {
     return participantkey;
   }
 
-  // Future<void> removeFromExistingSession() async {
-  //   removeAllDataFromSharedPreferences();
-  //   print("Inside removeFromExistingSession");
-  //   print(preferences?.getString(PreferenceKeys.CURRENT_SESSION));
-  //   await dbReference.child(scrumSession!.id!).remove();
-  // }
-
-  // void removeAllDataFromSharedPreferences() async {
-  //   print("Inside removeALldata");
-  //   await preferences?.clear();
-  // }
-
   void removeFromExistingSession() async {
-    // removeAllDataFromSharedPreferences();
     print("Inside removeFromExistingSession");
 
-    // String participantKey = await getParticipantKey(
-    //     scrumSession!.activeParticipant, scrumSession!.participants);
-    // print("before removal  $participantKey");
     DatabaseEvent event = await dbReference
         .child(scrumSession!.id!)
         .once(DatabaseEventType.value);
@@ -328,10 +276,8 @@ class ScrumPokerFirebase {
             scrumSession!.activeParticipant!.isOwner == false)) {
       await dbReference.child(scrumSession!.id!).remove();
     } else {
-      print("______________________________");
-      print(removeSessionData!["participants"]);
       var participantKey = getParticipantKey(
-          activeParticipant, removeSessionData["participants"]);
+          activeParticipant, removeSessionData!["participants"]);
       await dbReference
           .child(scrumSession!.id!)
           .child("participants")

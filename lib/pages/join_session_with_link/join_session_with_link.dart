@@ -47,15 +47,19 @@ class _JoinSessionFromLinkState extends State<JoinSessionFromLink> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        duration: Duration(microseconds: 300),
-        color: Colors.blue[900],
-        child: Center(
-            child: Wrap(children: [
-          joinAnExistingSession(
-              context: context,
-              routerDelegate: widget.routerDelegate,
-              joinWithLink: true,
-              scrumSession: this.scrumSession)
-        ])));
+      duration: Duration(microseconds: 300),
+      color: Colors.blue[900],
+      child: Center(
+        child: Wrap(
+          children: [
+            joinAnExistingSession(
+                context: context,
+                routerDelegate: widget.routerDelegate,
+                joinWithLink: true,
+                scrumSession: this.scrumSession)
+          ],
+        ),
+      ),
+    );
   }
 }
