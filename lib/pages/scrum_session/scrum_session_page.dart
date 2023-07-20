@@ -68,6 +68,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   bool isOfflineProgressIndicator = false;
   //ConnectivityService connectivityService = ConnectivityService();
 
