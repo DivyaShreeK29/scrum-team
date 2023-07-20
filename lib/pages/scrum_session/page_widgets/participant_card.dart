@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/mirror_image.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
@@ -79,8 +80,8 @@ Widget participantCard(
           ? 175
           : 145,
       child: TweenAnimationBuilder(
-          tween: Tween<double>(begin: 0, end: showEstimates ? pi * 2 : 0),
-          duration: Duration(milliseconds: 500),
+          tween: Tween<double>(begin: 0, end: showEstimates ? pi : 0),
+          duration: Duration(milliseconds: 300),
           builder: (BuildContext context, double val, __) {
             return (Transform(
               alignment: Alignment.center,
@@ -116,11 +117,11 @@ Widget participantCard(
                                     participant.currentEstimate == '')
                                 ? heading6(context: context, text: '')
                                 : showEstimates
-                                    ? heading3(
+                                    ? MirrorText(heading3(
                                             context: context,
                                             text: participant.currentEstimate ??
                                                 '')
-                                        .color(Colors.white)
+                                        .color(Colors.white))
                                     : heading6(context: context, text: 'Ready')
                                         .color(Colors.white),
                             radius: (participant.currentEstimate == null ||
@@ -140,8 +141,14 @@ Widget participantCard(
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        body1(context: context, text: participant.name)
-                            .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+                        showEstimates
+                            ? MirrorText(body1(
+                                    context: context, text: participant.name))
+                                .paddingLRTB(
+                                    left: 8, right: 8, top: 8, bottom: 16)
+                            : body1(context: context, text: participant.name)
+                                .paddingLRTB(
+                                    left: 8, right: 8, top: 8, bottom: 16),
                         SizedBox(
                           width: 4,
                         ),
