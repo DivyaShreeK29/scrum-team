@@ -13,7 +13,7 @@ class FadeIn extends StatefulWidget {
 class _FadeInState extends State<FadeIn> {
   double widgetOpacity = 0.0;
   @override
-  void initState() {
+  void initState() {  
     super.initState();
     Future.delayed(Duration(microseconds: 300), () {
       setState(() {

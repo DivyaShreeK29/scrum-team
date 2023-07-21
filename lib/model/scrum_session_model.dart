@@ -37,6 +37,7 @@ class ScrumSession {
   void addParticipant(ScrumSessionParticipant participant) {
     bool found = false;
     for (var aParticipant in this.participants) {
+      print("in add participant method in Scrum_Session_Model ${aParticipant.id}");
       if (aParticipant.id == participant.id) {
         found = true;
         break;

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
@@ -7,7 +9,11 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
+import 'package:scrum_poker/store/shared_preference.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'dart:html';
+
+import 'package:scrum_poker/widgets/ui/style.dart';
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
@@ -20,12 +26,17 @@ class ScrumSessionPage extends StatefulWidget {
 }
 
 class _ScrumSessionPageState extends State<ScrumSessionPage> {
+  bool exitPage = false;
   String? sessionId;
   ScrumSession? scrumSession;
   Story? activeStory;
   bool showNewStoryInput = false;
   bool showCards = false;
   bool resetParticipantScrumCards = false;
+  double angle = 0.0;
+  final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  String iconData = "";
+  bool iconLabel = false;
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -42,7 +53,34 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
+    onSessionExit();
     //set callbacks into the session
+  }
+
+  void onSessionExit() {
+    window.onBeforeUnload.listen((event) async {
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      if ((scrumSession!.activeParticipant!.isOwner)) {
+        spfb.removeFromExistingSession();
+        // routerDelegate.pushRoute("/home/$sessionId");
+
+        
+        print("else part who is not owner");
+      }
+      // Code to execute when the browser is closed or navigated away
+      //delete the scrum session with the current id in firebase
+      //display msg to user that the session expired
+      //go back to previous page
+      //ExitSession(deleteSessionFromFirebase);
+      // setState(() {
+      //   // print(scrumSession!.participants);
+
+      //   // scrumSession!.participants.clear();
+      //   // print('set state exe');
+      //   // print(scrumSession!.participants);
+      // });
+      print('Browser is closing or navigating away!');
+    });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
@@ -65,6 +103,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void onNewParticipantAdded(newParticipant) {
     setState(() {
       this.scrumSession?.addParticipant(newParticipant);
+      showSnackbar();
     });
   }
 
@@ -77,6 +116,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         participant.currentEstimate = '';
       });
       this.resetParticipantScrumCards = true;
+      this.iconLabel=false;
     });
   }
 
@@ -95,6 +135,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void onShowCardsEventTriggered(bool value) {
     setState(() {
       this.showCards = value;
+      if (value) {
+        this.angle = (angle + pi) % (2 * pi);
+        print("angle after setting state:${this.angle}");
+      }
     });
   }
 
@@ -102,6 +146,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     this.resetParticipantScrumCards = false;
     ScrumPokerFirebase.instance.then(
         (ScrumPokerFirebase spfb) => spfb.setStoryEstimate(selectedValue));
+    setState(() {
+      iconLabel = true;
+      iconData = selectedValue;
+    });
   }
 
   onStoryEstimatesChanged(participantEstimates) {
@@ -127,46 +175,133 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: AnimatedContainer(
+        child: ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Scaffold(
+        body: AnimatedContainer(
             duration: Duration(microseconds: 300),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: buildScrumSessionPage(context)));
+            child: buildScrumSessionPage(context)),
+        floatingActionButton: getDeviceWidth(context) < 600
+            ? SizedBox(
+                width: 90,
+                child: FloatingActionButton(
+                    tooltip: "Press to Select a Card",
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return ScrumCardList(
+
+                              onCardSelected: onCardSelected,
+                              resetCardList: this.resetParticipantScrumCards,
+                              isLocked: this.showCards);
+                        },
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                      );
+                    },
+                    child: iconLabel
+                        ? Text(
+                            iconData,
+                            style: TextStyle(fontSize: 25.0),
+                          )
+                        : Icon(
+                            Icons.copy_outlined,
+                            size: 25.0,
+                          )),
+              )
+            : null,
+      ),
+    ));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
-    return Column(children: [
-      pageHeader(context),
-      ((this.showNewStoryInput == false)
-          ? buildDisplayStoryPanel(
-              context,
-              activeStory,
-              onNewStoryPressed,
-              onShowCardsButtonPressed,
-              scrumSession?.activeParticipant,
-              scrumSession)
-          : buildCreateStoryPanel(context)),
-      Expanded(
+    return Column(
+      children: [
+        pageHeader(context),
+        ((this.showNewStoryInput == false)
+            ? buildDisplayStoryPanel(
+                context,
+                activeStory,
+                onNewStoryPressed,
+                onShowCardsButtonPressed,
+                scrumSession?.activeParticipant,
+                scrumSession)
+            : buildCreateStoryPanel(context)),
+        Expanded(
           child: SingleChildScrollView(
-              child: Column(children: [
-        buildParticipantsPanel(context, showCards),
-        Divider(
-          color: Colors.white38,
-        ).margin(top: 8.0, bottom: 8.0),
-        ScrumCardList(
-            onCardSelected: onCardSelected,
-            resetCardList: this.resetParticipantScrumCards,
-            isLocked: this.showCards)
-      ])))
-    ]);
+            child: Column(
+              children: [
+                buildParticipantsPanel(context, showCards, angle),
+                Divider(
+                  color: Colors.white38,
+                ).margin(top: 8.0, bottom: 8.0),
+                getDeviceWidth(context) > 600
+                    ? ScrumCardList(
+                        onCardSelected: onCardSelected,
+                        resetCardList: this.resetParticipantScrumCards,
+                        isLocked: this.showCards)
+                    : Text("")
+                // : SizedBox(
+                //     height: 125,
+                //     width: 90,
+                //     child: FloatingActionButton(
+                //       tooltip: "Press to Select a Card",
+                //       onPressed: () {
+                //         showModalBottomSheet(
+                //             isScrollControlled: true,
+                //             context: context,
+                //             builder: (context) {
+                //               return ScrumCardList(
+                //                   onCardSelected: onCardSelected,
+                //                   resetCardList:
+                //                       this.resetParticipantScrumCards,
+                //                   isLocked: this.showCards);
+                //             });
+                //       },
+                //       child: Icon(
+                //         Icons.copy_outlined,
+                //         size: 50.0,
+                //       ),
+                //     ),
+                //   ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget buildParticipantsPanel(BuildContext context, showEstimates) {
-    return Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: scrumSession?.participants
-                .map((participant) =>
-                    participantCard(context, participant, showEstimates))
-                .toList() ??
-            []);
+  Widget buildParticipantsPanel(BuildContext context, showEstimates, angle) {
+    return Column(
+      children: [
+        Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: scrumSession?.participants
+                    .map((participant) => participantCard(
+                        context, participant, showEstimates, angle))
+                    .toList() ??
+                []),
+      ],
+    );
+  }
+
+  void showSnackbar() {
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(
+        content: Text('This is a Snackbar'),
+        duration: Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Perform an action when the Snackbar action button is pressed
+            // For example, you can dismiss the Snackbar
+            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
   }
 }

@@ -78,12 +78,7 @@ Widget getHeader(
                           text: "NEW STORY",
                           onPress: newStoryPressed)
                       .margin(right: 16.0),
-                  pillButton(
-                    onPress: showCardsPressed,
-                    context: context,
-                    text: "SHOW CARDS",
-                  ).margin(right: 16.0),
-                  pillButton(
+                      pillButton(
                       onPress: () async {
                         ScrumPokerFirebase spdb =
                             await ScrumPokerFirebase.instance;
@@ -91,7 +86,13 @@ Widget getHeader(
                             story?.id, story?.title, story?.description);
                       },
                       context: context,
-                      text: "REPLAY")
+                      text: "REPLAY").margin(right: 16.0),
+                  pillButton(
+                    onPress: showCardsPressed,
+                    context: context,
+                    text: "SHOW CARDS",
+                  ).margin(right: 16.0),
+                  
                 ])
             ],
           ).margin(left: 96, bottom: 24)));
