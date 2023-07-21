@@ -168,20 +168,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       spfb.removeFromExistingSession();
     });
-//     window.onOffline.listen((event) {
-//       showSnackbar(
-//           "${scrumSession?.activeParticipant?.name} lost network connection");
-//       //{do this inside updateParticipantConnectivity**}
-// //set timer
-//       onNewParticipantRemoved(scrumSession?.activeParticipant);
-//       //}
-//     });
-//     window.onOnline.listen((Event event) {
-//       // Internet connection is regained, handle it here
-//       // take the participants json from db and update the participants list and setstate
-//       showSnackbar(
-//           "${scrumSession!.activeParticipant?.name} restored network connection");
-//     });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
@@ -221,28 +207,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant!);
       showSnackbar('${oldParticipant!.name} left the session');
-
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //     duration: const Duration(seconds: 3),
-      //     content: Text("${oldParticipant.name} left the session"),
-      //     action: SnackBarAction(
-      //       label: 'DISMISS',
-      //       onPressed: () {
-      //         // Some code to undo the change.
-      //       },
-      //     )));
-      // print(
-      //     "_______________________________----------------____________________-");
     });
-    //print(oldParticipant);
-    // ScrumSessionParticipant sp = oldParticipant;
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     duration: const Duration(seconds: 3),
-    //     content: Text("${oldParticipant.name}"),
-    //   ),
-    // );
-    print("________________");
   }
 
   void onEndSession() {
@@ -378,13 +343,4 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       ),
     );
   }
-
-  // void showDialogBox() {
-  //   showCupertinoDialog(
-  //       context: context,
-  //       builder: (BuildContext context) => CupertinoAlertDialog(
-  //             title: const Text('No Connection'),
-  //             content: const Text('Please check your internet connectivity'),
-  //           ));
-  // }
 }

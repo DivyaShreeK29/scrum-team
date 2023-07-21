@@ -1,4 +1,7 @@
+// import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../widgets/ui/typograpy_widgets.dart';
 //import 'package:scrum_poker/pages/scrum_session/scrum_session_page.dart';
@@ -38,18 +41,13 @@ class ExitPage extends StatelessWidget {
                 "Session expired",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              content: Text("Oops....The host has ended the session"),
+              content: Text("The host has ended the session"),
               actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                ),
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    print("asdf");
+                    SystemNavigator.pop();
                   },
                 ),
               ],

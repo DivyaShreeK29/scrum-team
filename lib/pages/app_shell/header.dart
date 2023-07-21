@@ -67,9 +67,6 @@ Widget pageHeader(BuildContext context, ScrumSession? session,
     ],
     centerTitle: false,
     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // AnimatedContainer(duration: Duration(milliseconds: standard_duration),
-      //        width:150,
-      //        child:Image.asset("assets/images/logo_white.png")),
       heading6(context: context, text: "Scrum Poker", color: Colors.white),
       //Divider()
     ]),
@@ -79,23 +76,6 @@ Widget pageHeader(BuildContext context, ScrumSession? session,
   );
 }
 
-// class CancelButton extends StatefulWidget {
-//   const CancelButton(this.session, this.participant, {Key? key})
-//       : super(key: key);
-//   final ScrumSessionParticipant? participant;
-//   final ScrumSession? session;
-
-//   @override
-//   State<CancelButton> createState() => _CancelButtonState();
-// }
-
-// class _CancelButtonState extends State<CancelButton> {
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return pillButton(context: context, text: returnText, onPress: onPress);
-//   }
-// }
 class CancelButton extends StatefulWidget {
   const CancelButton(this.session, this.participant, this.routerDelegate,
       {Key? key})
@@ -127,7 +107,6 @@ class _CancelButtonState extends State<CancelButton> {
     spfb.removeFromExistingSession();
   }
 
-  // onEndSessionClicked() {
   @override
   Widget build(BuildContext context) {
     return pillButton(
