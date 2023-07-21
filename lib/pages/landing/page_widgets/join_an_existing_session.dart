@@ -40,7 +40,7 @@ Widget joinAnExistingSession(
                             InputDecoration(hintText: "Enter the session URL"),
                         validator: (value) {
                           print("++++++++++++$value");
-                          if (value!.isEmpty && value == scrumSession?.id) {
+                          if (value!.isEmpty || value == scrumSession?.id) {
                             return 'Session name is required';
                           }
                           return null;
@@ -79,7 +79,13 @@ Widget joinAnExistingSession(
                                       sessionId: sessionId,
                                       owner: false);
 
-                                  routerDelegate.pushRoute("/home/$sessionId");
+                                  print(
+                                      "+++++++++++++++++++++++++${sessionId.length}");
+
+                                  sessionId.length == 36
+                                      ? routerDelegate
+                                          .pushRoute("/home/$sessionId")
+                                      : routerDelegate.pushRoute("/not-found");
                                 }
                               }
                             },
