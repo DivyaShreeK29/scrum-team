@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share/share.dart';
+
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
@@ -162,6 +164,7 @@ import '../../../widgets/ui/style.dart';
 //                   color: Theme.of(context).primaryColor)
 //               .paddingLRTB(left: 16, right: 16, top: 4, bottom: 4)));
 // }
+
 
 Widget buildDisplayStoryPanel(
     BuildContext context,
@@ -341,7 +344,9 @@ Widget getHeader(
                   ],
                 ),
               ],
+
             ).margin(left: 20, bottom: 24),
+           
         ],
       ),
     ),

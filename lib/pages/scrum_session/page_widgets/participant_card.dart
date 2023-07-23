@@ -1,3 +1,4 @@
+
 // import 'package:flutter/material.dart';
 // import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 // import 'package:scrum_poker/pages/scrum_session/page_widgets/mirror_image.dart';
@@ -101,6 +102,8 @@ Widget participantCard(
   bool showEstimates,
   bool isOfflineProgressIndicator,
 ) {
+
+
   String _participant = participant.name.isNotEmpty
       ? participant.name.substring(0, 2).toUpperCase()
       : participant.name.substring(0, 2).toUpperCase();
@@ -111,6 +114,7 @@ Widget participantCard(
           curve: Curves.easeIn,
           height: (participant.currentEstimate != null &&
                   participant.currentEstimate != '')
+
               ? 160
               : 160,
           width: (participant.currentEstimate != null &&
@@ -120,6 +124,7 @@ Widget participantCard(
           child: TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: showEstimates ? pi : 0),
             duration: Duration(milliseconds: 300),
+
             builder: (BuildContext context, double val, __) {
               print(MediaQuery.of(context).size.width);
               return Transform(
@@ -134,6 +139,7 @@ Widget participantCard(
                         child: Visibility(
                           visible: participant.currentEstimate != null &&
                               participant.currentEstimate!.isNotEmpty,
+
                           replacement: Stack(
                             children: [
                               CircleAvatar(
@@ -168,11 +174,13 @@ Widget participantCard(
                                 ),
                               ),
                             ],
+
                           ),
                           child: Stack(
                             children: [
                               CircleAvatar(
                                 child: showEstimates
+
                                     ? MirrorText(
                                         heading3(
                                           context: context,
@@ -183,6 +191,8 @@ Widget participantCard(
                                     : heading6(context: context, text: 'Ready')
                                         .color(Colors.white),
                                 radius: 65.0,
+
+                                    
                                 backgroundColor: showEstimates
                                     ? Colors.blue[900]
                                     : Colors.green[900],
@@ -193,6 +203,7 @@ Widget participantCard(
                                   child: Tooltip(
                                     message: participant.name,
                                     textStyle: TextStyle(
+
                                         fontSize: 30,
                                         //backgroundColor: Colors.black,
                                         color:
@@ -217,6 +228,7 @@ Widget participantCard(
                                                 fontSize: 30,
                                               ),
                                             ),
+
                                       badgeColor:
                                           Color.fromARGB(255, 229, 57, 41),
                                     ),
@@ -246,8 +258,11 @@ Widget participantCard(
               ? 175
               : 145,
           child: TweenAnimationBuilder(
+
               tween: Tween<double>(begin: 0, end: showEstimates ? pi : 0),
               duration: Duration(milliseconds: 300),
+
+              
               builder: (BuildContext context, double val, __) {
                 return (Transform(
                   alignment: Alignment.center,
@@ -283,12 +298,17 @@ Widget participantCard(
                                         participant.currentEstimate == '')
                                     ? heading6(context: context, text: '')
                                     : showEstimates
+
                                         ? MirrorText(heading3(
+
+
                                                 context: context,
                                                 text: participant
                                                         .currentEstimate ??
                                                     '')
+
                                             .color(Colors.white))
+
                                         : heading6(
                                                 context: context, text: 'Ready')
                                             .color(Colors.white),
@@ -303,6 +323,7 @@ Widget participantCard(
                             ),
                           ),
                         ),
+
                         // body1(context: context, text: participant.name)
                         //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
                         Row(
@@ -327,11 +348,13 @@ Widget participantCard(
                                 : Text(""),
                           ],
                         )
+
                       ],
                     ),
                   ),
                 ));
               })).fadeInOut();
+
 }
 
 Widget buildParticipantCards(
@@ -352,4 +375,6 @@ Widget buildParticipantCards(
       );
     }).toList(),
   );
+
+
 }

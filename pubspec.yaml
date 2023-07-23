@@ -45,7 +45,9 @@ dependencies:
   connectivity: ^3.0.6
   share: ^2.0.4
   badges: ^2.0.1
+
   playing_cards: ^0.3.1+9
+
 
 dev_dependencies:
   flutter_test:
