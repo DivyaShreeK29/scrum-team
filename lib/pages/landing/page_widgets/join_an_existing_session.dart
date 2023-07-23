@@ -8,7 +8,7 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 Widget joinAnExistingSession(
     {required BuildContext context,
     required AppRouterDelegate routerDelegate,
-    bool joinWithLink: false,
+    bool joinWithLink = false,
     ScrumSession? scrumSession}) {
   TextEditingController existingSessionController = TextEditingController();
   TextEditingController participantNameController = TextEditingController();
@@ -74,17 +74,17 @@ Widget joinAnExistingSession(
                         if (joinWithLink) {
                           sessionId = scrumSession!.id!;
                         }
-                        if (!joinWithLink) {
-                          ScrumPokerFirebase spfb =
-                              await ScrumPokerFirebase.instance;
-                          await spfb.joinScrumSession(
-                              participantName: participantNameController.text,
-                              sessionId: sessionId!,
-                              owner: false);
-                          print("sessionID= ${sessionId}");
+                        // if (!joinWithLink) {
+                        ScrumPokerFirebase spfb =
+                            await ScrumPokerFirebase.instance;
+                        await spfb.joinScrumSession(
+                            participantName: participantNameController.text,
+                            sessionId: sessionId!,
+                            owner: false);
+                        print("sessionID= ${sessionId}");
 
-                          routerDelegate.pushRoute("/home/$sessionId");
-                        }
+                        routerDelegate.pushRoute("/home/$sessionId");
+                        // }
                       }
                     },
                     child: Text("JOIN"))),
