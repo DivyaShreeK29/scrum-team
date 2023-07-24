@@ -288,7 +288,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
             duration: Duration(microseconds: 300),
             color: Theme.of(context).scaffoldBackgroundColor,
             child: buildScrumSessionPage(context)),
-        floatingActionButton: getDeviceWidth(context) < 500
+        floatingActionButton: getDeviceWidth(context) < 600
             ? SizedBox(
                 width: 90,
                 child: FloatingActionButton(
