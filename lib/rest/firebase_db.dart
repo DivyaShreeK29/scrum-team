@@ -117,18 +117,6 @@ class ScrumPokerFirebase {
         getParticipantKey(activeParticipant, sessionData!["participants"]);
     scrumSession!.activeParticipantKey = this.activeParticipantkey;
     this.sessionInitializationCallback(scrumSession);
-    // dbReference.child(sessionId).once(DatabaseEventType.value).then((event) {
-    //   dynamic jsonData = event.snapshot.toJson();
-    //   scrumSession = ScrumSession.fromJson(jsonData);
-    //   if (this.activeParticipant == null) {
-    //     this.activeParticipant = getExistingActiveParticipant(sessionId);
-    //   }
-    //   scrumSession!.activeParticipant = this.activeParticipant;
-    //   this.activeParticipantkey =
-    //       getParticipantKey(activeParticipant, jsonData["participants"]);
-    //   scrumSession!.activeParticipantKey = this.activeParticipantkey;
-    //   this.sessionInitializationCallback(scrumSession);
-    // });
   }
 
   Future<void> joinScrumSession(
@@ -271,9 +259,7 @@ class ScrumPokerFirebase {
     Map<String, dynamic>? removeSessionData =
         event.snapshot.value as Map<String, dynamic>?;
 
-    if (scrumSession!.activeParticipant!.isOwner ||
-        (scrumSession!.participants.length == 1 &&
-            scrumSession!.activeParticipant!.isOwner == false)) {
+    if (scrumSession!.activeParticipant!.isOwner) {
       await dbReference.child(scrumSession!.id!).remove();
     } else {
       var participantKey = getParticipantKey(
@@ -338,19 +324,6 @@ void saveActiveParticipant(
 
 //HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
 // Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
-//    Map<String, dynamic> jsonMap = Map<String, dynamic>();
-//   String onlyElementString = toConvert.substring(1, toConvert.length - 1);
-//   print(onlyElementString);
-//   List elementPair = onlyElementString.split(",");
-
-//   elementPair.forEach((element) {
-//     List nameValue = element.split(":");
-//     print(nameValue);
-//     jsonMap[nameValue.elementAt(0).trim()] = nameValue.elementAt(1).trim();
-//   });
-//   return jsonMap;
-// }
-//Future<void> removeExistingSession() async
 
 void removeAllDataFromSharedPreferences() async {
   print("Inside removeALldata");

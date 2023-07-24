@@ -40,6 +40,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   String urlString = "";
   late RouteConfig routeConfig;
   Widget? activePage;
+
   AppRouterDelegate() {
     navigatorKey = GlobalKey<NavigatorState>();
     routeConfig = NavigationUtil.resolveRouteToWidget("/", routerMap);
@@ -55,7 +56,6 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Future<bool> popRoute() {
-    // TODO: implement popRoute
     final navigatorState = navigatorKey.currentState;
 
     if (navigatorState != null && navigatorState.canPop()) {
@@ -94,7 +94,6 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Future<void> setNewRoutePath(AppRoutePath configuration) async {
-    // TODO: implement setNewRoutePath
     print("Set new route path ${configuration.routeConfig.route}");
     //set the incoming route to reflect the incoming route
     this.routeConfig = configuration.routeConfig;

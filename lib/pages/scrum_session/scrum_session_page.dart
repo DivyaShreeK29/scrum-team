@@ -270,6 +270,24 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     }
   }
 
+  void showSnackbar(String msg) {
+    scaffoldMessengerKey.currentState!.clearSnackBars();
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Perform an action when the Snackbar action button is pressed
+            // For example, you can dismiss the Snackbar
+            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //onSessionExit();
@@ -301,17 +319,21 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
               scrumSession)
           : buildCreateStoryPanel(context)),
       Expanded(
-          child: SingleChildScrollView(
-              child: Column(children: [
-        buildParticipantsPanel(context, showCards),
-        Divider(
-          color: Colors.white38,
-        ).margin(top: 8.0, bottom: 8.0),
-        ScrumCardList(
-            onCardSelected: onCardSelected,
-            resetCardList: this.resetParticipantScrumCards,
-            isLocked: this.showCards)
-      ])))
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              buildParticipantsPanel(context, showCards),
+              Divider(
+                color: Colors.white38,
+              ).margin(top: 8.0, bottom: 8.0),
+              ScrumCardList(
+                  onCardSelected: onCardSelected,
+                  resetCardList: this.resetParticipantScrumCards,
+                  isLocked: this.showCards)
+            ],
+          ),
+        ),
+      )
     ]);
   }
 
@@ -324,23 +346,5 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
                     showEstimates, isOfflineProgressIndicator))
                 .toList() ??
             []);
-  }
-
-  void showSnackbar(String msg) {
-    scaffoldMessengerKey.currentState!.clearSnackBars();
-    scaffoldMessengerKey.currentState!.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        duration: Duration(seconds: 5),
-        action: SnackBarAction(
-          label: 'Close',
-          onPressed: () {
-            // Perform an action when the Snackbar action button is pressed
-            // For example, you can dismiss the Snackbar
-            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
-          },
-        ),
-      ),
-    );
   }
 }

@@ -22,9 +22,6 @@ class ExitPage extends StatelessWidget {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // AnimatedContainer(duration: Duration(milliseconds: standard_duration),
-                    //        width:150,
-                    //        child:Image.asset("assets/images/logo_white.png")),
                     heading6(
                         context: context,
                         text: "Scrum Poker",
