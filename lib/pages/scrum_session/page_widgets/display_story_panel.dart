@@ -229,7 +229,7 @@ Widget getHeader(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    heading4(context: context, text: session?.name ?? '')
+                    heading6(context: context, text: session?.name ?? '')
                         .color(Theme.of(context).scaffoldBackgroundColor),
                   ],
                 ),

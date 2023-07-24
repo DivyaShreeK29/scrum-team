@@ -9,7 +9,7 @@ import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
 //import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
-import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
+//import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
 
 //import '../../model/scrum_session_participant_model.dart';
 
@@ -109,10 +109,15 @@ class _CancelButtonState extends State<CancelButton> {
 
   @override
   Widget build(BuildContext context) {
-    return pillButton(
-      context: context,
-      text: returnText(),
-      onPress: removeParticipantFromScrumSession,
-    );
+    // return pillButton(
+    //   context: context,
+    //   text: returnText(),
+    //   onPress: removeParticipantFromScrumSession,
+
+    return IconButton(
+        onPressed: () {
+          removeParticipantFromScrumSession();
+        },
+        icon: Icon(Icons.exit_to_app));
   }
 }

@@ -228,6 +228,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         participant.currentEstimate = '';
       });
       this.resetParticipantScrumCards = true;
+      this.iconLabel = false;
     });
   }
 
@@ -311,11 +312,14 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
                             iconData,
                             style: TextStyle(fontSize: 25.0),
                           )
-                        : Icon(
-                            Icons.copy_outlined,
+                        // : Icon(
+                        //     Icons.copy_outlined,
+                        //     size: 30.0,
+                        //   )),
+                        : ImageIcon(
+                            AssetImage("assets/images/playing_cards_icon.png"),
                             size: 30.0,
-                          )),
-              )
+                          )))
             : null,
       ),
     ));

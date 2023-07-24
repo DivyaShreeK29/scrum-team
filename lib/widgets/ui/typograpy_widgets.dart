@@ -11,7 +11,7 @@ Text heading6(
 
 Text heading420(
     {required context, required String text, Color color: Colors.black}) {
-  String reverse = text.split("").reversed.join();
+  // String reverse = text.split("").reversed.join();
   return _getStyledText(
       text: text, textStyle: TextStyles.heading6, color: color);
 }
