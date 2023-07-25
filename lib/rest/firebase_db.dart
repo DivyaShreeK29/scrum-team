@@ -61,10 +61,7 @@ class ScrumPokerFirebase {
 
   get firebase => null;
 
-  ///Starts a new scrum session [sessionName]
-  ///that is owned [sessionOwnerName] . This owner gets all the control like
-  ///starting a new session,replay etc
-  /// Returns a unique session id that identifies the session
+  
   Future<String> startNewScrumSession(
       String sessionName, String sessionOwnerName) async {
     ScrumSessionParticipant participant = ScrumSessionParticipant(
@@ -291,9 +288,6 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   ScrumSession? session;
   String? existingSessionString =
       preferences?.getString(PreferenceKeys.CURRENT_SESSION);
-  print("in geap");
-  print(existingSessionString);
-  print("in geap1");
   String? activeParticipantString =
       preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT);
   if (existingSessionString != null) {
@@ -321,8 +315,6 @@ void saveActiveParticipant(
   print("Active participant saved...");
 }
 
-//HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
-// Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
 
 void removeAllDataFromSharedPreferences() async {
   print("Inside removeALldata");
