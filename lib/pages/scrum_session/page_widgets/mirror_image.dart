@@ -10,7 +10,7 @@ class MirrorText extends StatelessWidget {
     return Transform(
         alignment: Alignment.center,
         transform: Matrix4.identity()
-          ..scale(-1.0, 1.0, 1.0), // Apply horizontal mirror effect
+          ..scale(-1.0, 1.0, 1.0),
         child: text);
   }
 }
