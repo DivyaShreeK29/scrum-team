@@ -277,7 +277,11 @@ class ScrumPokerFirebase {
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
+
+      
+
       var E = event.snapshot.value as Map;
+
 
       if (scrumSession!.id == E['id']) {
         callback();

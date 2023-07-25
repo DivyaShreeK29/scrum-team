@@ -14,6 +14,7 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 //import '../../model/scrum_session_participant_model.dart';
 
 import '../../model/scrum_session_participant_model.dart';
+import '../../widgets/ui/style.dart';
 
 Widget pageHeader(BuildContext context, ScrumSession? session,
     ScrumSessionParticipant? participant, AppRouterDelegate? routerDelegate) {
@@ -65,16 +66,38 @@ class _CancelButtonState extends State<CancelButton> {
   }
 
   @override
+//
   Widget build(BuildContext context) {
-    // return pillButton(
-    //   context: context,
-    //   text: returnText(),
-    //   onPress: removeParticipantFromScrumSession,
-
-    return IconButton(
-        onPressed: () {
-          removeParticipantFromScrumSession();
-        },
-        icon: Icon(Icons.exit_to_app));
+    return //
+        getDeviceWidth(context) > 600
+            ? TextButton.icon(
+                onPressed: () {
+                  removeParticipantFromScrumSession();
+                },
+                icon: Icon(
+                  Icons.exit_to_app,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                label: Text(
+                  returnText(),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ))
+            : Tooltip(
+                message: returnText(),
+                child: TextButton.icon(
+                    onPressed: () {
+                      removeParticipantFromScrumSession();
+                    },
+                    icon: Icon(
+                      Icons.exit_to_app,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    label: Text(
+                      "",
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                    )),
+              );
   }
 }

@@ -90,6 +90,7 @@ Widget participantCard(
                             ),
                           ),
                         ),
+                       
                         if (isOfflineProgressIndicator)
                           LinearProgressIndicator(),
                         ((val > (pi / 2)) && showEstimates)
@@ -174,8 +175,11 @@ Widget participantCard(
                             ),
                           ),
                         ),
+
+
                         if (isOfflineProgressIndicator)
                           LinearProgressIndicator(),
+
                         ((val > (pi / 2)) && showEstimates)
                             ? MirrorText(body1(
                                     context: context, text: participant.name))
