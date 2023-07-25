@@ -4,6 +4,8 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
+import '../../../widgets/ui/style.dart';
+
 class ScrumCard extends StatefulWidget {
   final dynamic onCardSelected;
   final String value;
@@ -22,7 +24,8 @@ class ScrumCard extends StatefulWidget {
 class _ScrumCardState extends State<ScrumCard> {
   void onCardClicked() {
     widget.onCardSelected(widget.value);
-    getDeviceWidth(context)<600 ? Navigator.pop(context):null;
+
+    getDeviceWidth(context) < 600 ? Navigator.pop(context) : null;
   }
 
   @override

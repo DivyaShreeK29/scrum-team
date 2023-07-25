@@ -6,9 +6,10 @@ import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
-import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+//import 'package:scrum_poker/widgets/ui/style.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
+import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
 import '../../../widgets/ui/style.dart';
 
@@ -45,136 +46,50 @@ Widget getHeader(
   ScrumSession? session,
 ) {
   return Expanded(
-    child: Container(
-      color: Theme.of(context).primaryColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      //color: Theme.of(context).primaryColor,
+      child: Container(
+          color: Theme.of(context).primaryColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Share button
+              heading4(context: context, text: session?.name ?? '')
+                  .color(Theme.of(context).scaffoldBackgroundColor),
+              caption(
+                      context: context,
+                      text: "Share this link to invite your team members")
+                  .color(Theme.of(context).scaffoldBackgroundColor)
+                  .margin(top: 2.0),
               TextButton(
-                child: Tooltip(
-                  message: "SHARE LINK AND ENJOY THE POKER",
-                  child: Wrap(
-                    runSpacing: 10,
-                    spacing: 10.0,
-                    children: [
-                      Icon(
-                        Icons.share,
-                        color: Colors.blue[100],
-                      ),
-                    ],
-                    alignment: WrapAlignment.start,
+                child: Wrap(runSpacing: 10, spacing: 10.0, children: [
+                  body2(context: context, text: getJoinUrl(session))
+                      .color(Colors.blue[100]!),
+                  Icon(
+                    Icons.copy_outlined,
+                    color: Colors.blue[100],
                   ),
-                ),
+                  body2(context: context, text: "COPY LINK")
+                      .color(Colors.blue[100]!)
+                ]),
                 onPressed: () {
-                  shareUrl(context, session);
                   copyUrlToClipboard(context, session);
                 },
               ),
-              SizedBox(height: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    heading4(context: context, text: session?.name ?? '')
-                        .color(Theme.of(context).scaffoldBackgroundColor),
-                  ],
-                ),
+              SizedBox(
+                height: 12,
               ),
-            ],
-          ).margin(left: 20, bottom: 12),
-          if ((participant?.isOwner ?? false) &&
-              (getDeviceWidth(context) < 600))
-            Row(
-              children: [
-                Wrap(
-                  runSpacing: 10.0,
-                  spacing: 10.0,
-                  children: [
-                    TextButton(
-                      child: Tooltip(
-                        message: "ADD NEW STORY",
-                        child: Wrap(
-                          runSpacing: 8,
-                          spacing: 8.0,
-                          children: [
-                            Icon(
-                              Icons.add,
-                              color: Colors.blue[100],
-                              size: 30,
-                            )
-                          ],
-                        ),
-                      ),
-                      onPressed: newStoryPressed,
-                    ),
-                    TextButton(
-                      child: Tooltip(
-                        message: "SHOW CARD",
-                        child: Wrap(
-                          runSpacing: 8,
-                          spacing: 8.0,
-                          children: [
-                            Icon(
-                              Icons.preview,
-                              color: Colors.blue[100],
-                              size: 30,
-                            )
-                          ],
-                        ),
-                      ),
-                      onPressed: showCardsPressed,
-                    ),
-                    TextButton(
-                      child: Tooltip(
-                        message: "REPLAY",
-                        child: Wrap(
-                          runSpacing: 8,
-                          spacing: 8.0,
-                          children: [
-                            Icon(
-                              Icons.replay,
-                              color: Colors.blue[100],
-                              size: 30,
-                            )
-                          ],
-                        ),
-                      ),
-                      onPressed: () async {
-                        ScrumPokerFirebase spdb =
-                            await ScrumPokerFirebase.instance;
-                        spdb.setActiveStory(
-                          story?.id,
-                          story?.title,
-                          story?.description,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ).margin(left: 20, bottom: 24),
-          if ((participant?.isOwner ?? false) &&
-              (getDeviceWidth(context) > 600))
-            Row(
-              children: [
-                Wrap(
-                  runSpacing: 10.0,
-                  spacing: 10.0,
-                  children: [
-                    pillButton(
-                      context: context,
-                      text: "NEW STORY",
-                      onPress: newStoryPressed,
-                    ),
-                    pillButton(
-                      onPress: showCardsPressed,
-                      context: context,
-                      text: "SHOW CARDS",
-                    ),
-                    pillButton(
+              if (participant?.isOwner ?? false)
+                Wrap(runSpacing: 10.0, children: [
+                  pillButton(
+                          context: context,
+                          text: "NEW STORY",
+                          onPress: newStoryPressed)
+                      .margin(right: 16.0),
+                  pillButton(
+                    onPress: showCardsPressed,
+                    context: context,
+                    text: "SHOW CARDS",
+                  ).margin(right: 16.0),
+                  pillButton(
                       onPress: () async {
                         ScrumPokerFirebase spdb =
                             await ScrumPokerFirebase.instance;
@@ -185,16 +100,10 @@ Widget getHeader(
                         );
                       },
                       context: context,
-                      text: "REPLAY",
-                    ),
-                  ],
-                ),
-              ],
-            ).margin(left: 96, bottom: 24),
-        ],
-      ),
-    ),
-  );
+                      text: "REPLAY")
+                ])
+            ],
+          ).margin(left: 96, bottom: 24)));
 }
 
 Widget? getStoryBoard(BuildContext context, Story? story) {

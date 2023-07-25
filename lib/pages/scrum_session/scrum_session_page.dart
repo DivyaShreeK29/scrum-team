@@ -1,10 +1,11 @@
-import 'dart:async';
+import 'dart:async' show Timer;
 
 // import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 //import 'package:internet_connection_checker/internet_connection_checker.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -15,15 +16,25 @@ import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
-import 'package:scrum_poker/store/shared_preference.dart';
+//import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
 
 import 'package:scrum_poker/widgets/ui/style.dart';
 import 'package:badges/badges.dart' as badges;
+
+import '../../widgets/ui/style.dart';
+
+//import '../connectivity/connectivity.dart';
+// ignore: avoid_web_libraries_in_flutter
+//import 'dart:html' as html;
+
+//html.Element? appElement; // Reference to your app element
+
+
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
@@ -52,6 +63,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool iconLabel = false;
   // bool exitPage = false;
 
+  
   bool isOfflineProgressIndicator = false;
   //ConnectivityService connectivityService = ConnectivityService();
 
@@ -89,7 +101,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void getConnectivity() {
     Connectivity().onConnectivityChanged.listen((result) {
       //var _connectivityResult = result;
-      bool isConnected = result != ConnectivityResult.none;
+      bool isConnected = (result != ConnectivityResult.none);
       print("=============$result");
       print("=============$isConnected");
 
@@ -100,7 +112,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
         showSnackbar(
             "${scrumSession?.activeParticipant?.name} lost network connection");
-        Timer(Duration(seconds: 20), () {
+        Timer(Duration(seconds: 60), () {
           print("Executed after 1 minute");
           if (!isConnected) {
             print("Executed after 1 minute if olgade");
@@ -233,6 +245,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       iconLabel = true;
       iconData = selectedValue;
     });
+    iconLabel = true;
+    iconData = selectedValue;
   }
 
   onStoryEstimatesChanged(participantEstimates) {
@@ -268,51 +282,50 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
               child: buildScrumSessionPage(context)),
           floatingActionButton: getDeviceWidth(context) < 600
               ? Stack(
-                children: [
-                  FloatingActionButton(
-                      tooltip: "Press to Select a Card",
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return ScrumCardList(
-                                onCardSelected: onCardSelected,
-                                resetCardList:
-                                    this.resetParticipantScrumCards,
-                                isLocked: this.showCards);
-                          },
-                          backgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
-                        );
-                      },
-                      child /*iconLabel
+                  children: [
+                    FloatingActionButton(
+                        tooltip: "Press to Select a Card",
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return ScrumCardList(
+                                  onCardSelected: onCardSelected,
+                                  resetCardList:
+                                      this.resetParticipantScrumCards,
+                                  isLocked: this.showCards);
+                            },
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                          );
+                        },
+                        child /*iconLabel
                       //     ? Text(
                       //         iconData,
                       //         style: TextStyle(fontSize: 25.0),
                       //       )*/
-                          : Icon(
-                        Icons.copy_outlined,
-                        size: 25.0,
-                      )),
-                  badges.Badge(
-                    shape: badges.BadgeShape.square,
-                    badgeContent: iconLabel
-                        ? Text(
-                            iconData,
-                            style: TextStyle(fontSize: 20.0,color: Colors.white),
-
-                          )
-                        : null,
-                    position: badges.BadgePosition.topEnd(),
-                    padding: EdgeInsetsDirectional.only(end: 0),
-                    badgeColor: const Color.fromARGB(255, 222, 243, 33),
-                    borderSide: BorderSide(style: BorderStyle.solid),
-                    elevation: 2,
-                    
-                  ),
-                ],
-                alignment: Alignment.topRight,
-              )
+                            : Icon(
+                          Icons.copy_outlined,
+                          size: 25.0,
+                        )),
+                    badges.Badge(
+                      shape: badges.BadgeShape.square,
+                      badgeContent: iconLabel
+                          ? Text(
+                              iconData,
+                              style: TextStyle(
+                                  fontSize: 20.0, color: Colors.white),
+                            )
+                          : null,
+                      position: badges.BadgePosition.topEnd(),
+                      padding: EdgeInsetsDirectional.only(end: 0),
+                      badgeColor: const Color.fromARGB(255, 222, 243, 33),
+                      borderSide: BorderSide(style: BorderStyle.solid),
+                      elevation: 2,
+                    ),
+                  ],
+                  alignment: Alignment.topRight,
+                )
               : null,
         ),
       ),
