@@ -19,17 +19,17 @@ class ScrumPoker extends StatelessWidget {
   final AppRouterDelegate _appRouterDelegate = AppRouterDelegate();
   final AppRouteInformationParser _appRouteInformationParser =
       AppRouteInformationParser();
-  // final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      // scaffoldMessengerKey: scaffoldMessengerKey,
-      routeInformationParser: _appRouteInformationParser,
-      routerDelegate: _appRouterDelegate,
-      title: 'Scrum Poker',
-      theme: appLightTheme,
-    );
+        routeInformationParser: _appRouteInformationParser,
+        routerDelegate: _appRouterDelegate,
+        title: 'Scrum Poker',
+        theme: appLightTheme,
+        debugShowCheckedModeBanner: false);
   }
 }

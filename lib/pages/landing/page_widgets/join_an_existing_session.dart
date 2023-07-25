@@ -8,10 +8,14 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 Widget joinAnExistingSession(
     {required BuildContext context,
     required AppRouterDelegate routerDelegate,
-    bool joinWithLink= false,
+    bool joinWithLink = false,
     ScrumSession? scrumSession}) {
   TextEditingController existingSessionController = TextEditingController();
   TextEditingController participantNameController = TextEditingController();
+  // ignore: unused_local_variable
+  final _formKey = GlobalKey<FormState>();
+  String? processedSessionId;
+
   return Container(
     child: Card(
         child: Padding(
@@ -27,56 +31,38 @@ Widget joinAnExistingSession(
               body1(
                   context: context,
                   text: getDescription(joinWithLink, scrumSession)),
-                  SizedBox(
-                height: 20,
-              ),
-
               if (!joinWithLink)
                 TextField(
                   controller: existingSessionController,
                   decoration: InputDecoration(
-                      hintText: "Enter the session url"),
+                      hintText: "Enter the name of the session"),
                 ),
-
               if (!joinWithLink || (joinWithLink && scrumSession != null))
                 TextField(
                   controller: participantNameController,
                   decoration:
                       InputDecoration(hintText: "Enter your name or nickname"),
                 ),
-              SizedBox(
-                height: 40,
-              ),
               Center(
                   child: TextButton(
                       onPressed: () async {
-                        await joinSSession(joinWithLink,scrumSession,existingSessionController,participantNameController,routerDelegate);
+                        var sessionId = existingSessionController.text;
+                        if (joinWithLink) {
+                          sessionId = scrumSession!.id!;
+                        }
+                        ScrumPokerFirebase spfb =
+                            await ScrumPokerFirebase.instance;
+                        await spfb.joinScrumSession(
+                            participantName: participantNameController.text,
+                            sessionId: sessionId,
+                            owner: false);
+
+                        routerDelegate.pushRoute("/home/$sessionId");
                       },
                       child: Text("JOIN"))),
             ]))),
     width: 500,
   );
-}
-
-
-Future<void> joinSSession(bool joinWithLink,ScrumSession? scrumSession,TextEditingController existingSessionController,TextEditingController participantNameController,AppRouterDelegate? routerDelegate)async
-  {
-                        print("inside onScrumsession");
-                        var sessionId = existingSessionController.text;
-
-                        if (joinWithLink) {
-                          sessionId = scrumSession!.id!;
-                        }
-                        if(!joinWithLink || (joinWithLink && scrumSession != null)){
-                        ScrumPokerFirebase spfb =
-                            await ScrumPokerFirebase.instance;
-                         spfb.joinScrumSession(
-                            participantName: participantNameController.text,
-                            sessionId: sessionId,
-                            owner: false);
-
-                        routerDelegate?.pushRoute("/home/$sessionId");
-                        }
 }
 
 //returns the appropriate description in the header line based on the statement of the session

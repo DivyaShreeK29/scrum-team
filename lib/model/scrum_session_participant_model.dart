@@ -3,6 +3,8 @@ class ScrumSessionParticipant {
   String name = "";
   bool isOwner = false;
   String? currentEstimate;
+  bool connectivityController = true;
+
   ScrumSessionParticipant(name, isOwner, id, currentEstimate) {
     this.name = name;
     this.id = id;

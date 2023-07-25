@@ -10,6 +10,7 @@ import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/model/story_participant_estimate.dart';
 import 'package:scrum_poker/store/shared_preference.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 /*
   Singleton class to deal with connection to firebase
  */
@@ -28,6 +29,7 @@ class ScrumPokerFirebase {
   String? activeParticipantkey = "0";
 
   //static late final ScrumPokerFirebase instance = ScrumPokerFirebase._();
+
   ScrumPokerFirebase._(
       {required FirebaseDatabase db, required FirebaseAuth auth}) {
     _db = db;
@@ -45,10 +47,12 @@ class ScrumPokerFirebase {
           messagingSenderId: "315539366379",
           projectId: "scrum-poker-devdb",
           authDomain: "scrum-poker-devdb.firebaseapp.com",
+          
           databaseURL:
               "https://scrum-poker-devdb-default-rtdb.asia-southeast1.firebasedatabase.app/",
           // measurementId: "G-CH265MWWBG",
           storageBucket: "scrum-poker-devdb.appspot.com");
+             
       FirebaseApp scrumPokerApp =
           await Firebase.initializeApp(options: appOptions);
       FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
@@ -63,17 +67,18 @@ class ScrumPokerFirebase {
   DatabaseReference get dbReference => _db!.ref("sessions");
   FirebaseAuth get authenticate => _auth!;
 
+
+
   ///Starts a new scrum session [sessionName]
   ///that is owned [sessionOwnerName] . This owner gets all the control like
   ///starting a new session,replay etc
   /// Returns a unique session id that identifies the session
   Future<String> startNewScrumSession(
       String sessionName, String sessionOwnerName) async {
+        UserCredential user = await authenticate.signInWithEmailAndPassword(
+        email: "jay@scrumpoker.com", password: "asdfgh");
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
-        email: "jay@scrumpoker.com", password: "asdfgh");
-
     String sessionId = ScrumSession.newID();
     await dbReference.child(sessionId).set({
       "id": sessionId,
@@ -97,6 +102,10 @@ class ScrumPokerFirebase {
   void onSessionInitialized(dynamic successCallback, dynamic failedCallback) {
     this.sessionInitializationCallback = successCallback;
     this.sessionInitializationFailedCallback = failedCallback;
+  }
+
+  Future<DataSnapshot> get participants {
+    return dbReference.child(scrumSession!.id!).child("participants").get();
   }
 
   void getScrumSession(String sessionId) async {
@@ -135,15 +144,15 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner = false}) async {
-    
-    print(" before in JoinscrumSession Method$participantName");
     UserCredential user = await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
+    
+   
 
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
-    print("in JoinscrumSession Method$participant");
-    print("in JoinscrumSession Method$participantName");
+   
+
 
     if (participant == null) {
       print("in JoinscrumSession Method is participant is null $participant");
@@ -169,6 +178,7 @@ class ScrumPokerFirebase {
     //   saveActiveParticipant(sessionId, participant);
 
     // }
+    print("jsso");
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -274,6 +284,7 @@ class ScrumPokerFirebase {
     String participantkey = '';
     var keys = participants.keys;
     for (var key in keys) {
+      print(participants[key]['id']);
       if (participants[key]['id'] == activeParticipant.id) {
         participantkey = key;
         break;
@@ -282,28 +293,38 @@ class ScrumPokerFirebase {
     return participantkey;
   }
 
-  Future<void> removeFromExistingSession() async {
-    removeAllDataFromSharedPreferences();
+  void removeFromExistingSession() async {
     print("Inside removeFromExistingSession");
-    print(preferences?.getString(PreferenceKeys.CURRENT_SESSION));
-    await dbReference.child(scrumSession!.id!).remove();
-  }
 
-  void getPaticipants(String sessionId) async {
     DatabaseEvent event = await dbReference
-        .child(sessionId)
-        .child("participants")
+        .child(scrumSession!.id!)
         .once(DatabaseEventType.value);
 
-    Map<String, dynamic>? participantData =
+    Map<String, dynamic>? removeSessionData =
         event.snapshot.value as Map<String, dynamic>?;
-    String participantList =
-        ScrumSessionParticipant.fromJSON(participantData).toString();
-    if (participantList != null) {
-      print("within if block in firebase ${participantList}");
+
+    if (scrumSession!.activeParticipant!.isOwner ) {
+      await dbReference.child(scrumSession!.id!).remove();
     } else {
-      participantData.toString();
+      var participantKey = getParticipantKey(
+          activeParticipant, removeSessionData!["participants"]);
+      await dbReference
+          .child(scrumSession!.id!)
+          .child("participants")
+          .child(participantKey)
+          .remove();
+
+      removeAllDataFromSharedPreferences();
     }
+  }
+
+  void onEndSession(dynamic callback) {
+    dbReference.onChildRemoved.listen((event) {
+      // routing to end page
+      print("listener----------------${event.snapshot.value}");
+
+      callback();
+    });
   }
 }
 
@@ -314,6 +335,9 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   ScrumSession? session;
   String? existingSessionString =
       preferences?.getString(PreferenceKeys.CURRENT_SESSION);
+  print("in geap");
+  print(existingSessionString);
+  print("in geap1");
   String? activeParticipantString =
       preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT);
   if (existingSessionString != null) {
@@ -371,3 +395,5 @@ void removeAllDataFromSharedPreferences() async {
 //   });
 //   return jsonMap;
 // }
+//Future<void> removeExistingSession() async
+

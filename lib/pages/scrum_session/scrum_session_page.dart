@@ -1,9 +1,18 @@
-import 'dart:math';
+import 'dart:async';
 
+// import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import 'package:internet_connection_checker/internet_connection_checker.dart';
+//import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
+//import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
+import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
@@ -14,12 +23,15 @@ import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
 
 import 'package:scrum_poker/widgets/ui/style.dart';
+import 'package:badges/badges.dart' as badges;
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
   final String id;
+  final AppRouterDelegate? routerDelegate;
 
-  ScrumSessionPage({Key? key, required this.id}) : super(key: key);
+  ScrumSessionPage({Key? key, required this.id, this.routerDelegate})
+      : super(key: key);
 
   @override
   _ScrumSessionPageState createState() => _ScrumSessionPageState(id);
@@ -30,6 +42,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   String? sessionId;
   ScrumSession? scrumSession;
   Story? activeStory;
+  AppRouterDelegate? routerDelegater;
   bool showNewStoryInput = false;
   bool showCards = false;
   bool resetParticipantScrumCards = false;
@@ -37,6 +50,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   String iconData = "";
   bool iconLabel = false;
+  // bool exitPage = false;
+
+  bool isOfflineProgressIndicator = false;
+  //ConnectivityService connectivityService = ConnectivityService();
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -53,33 +70,86 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
-    onSessionExit();
+    // connectivityService.startMonitoring((participants) {
+    //   setState(() {
+    //     this.scrumSession?.participants =
+    //         participants as List<ScrumSessionParticipant>;
+    //     this.scrumSession?.updateParticipantConnectivity(context);
+    //   });
+    // });
+
+    getConnectivity();
+    browserEventListeners();
+    //appElement =
+    // html.querySelector('#app'); // Replace 'app' with your app element ID
+
     //set callbacks into the session
   }
 
-  void onSessionExit() {
-    window.onBeforeUnload.listen((event) async {
-      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
-      if ((scrumSession!.activeParticipant!.isOwner)) {
-        spfb.removeFromExistingSession();
-        // routerDelegate.pushRoute("/home/$sessionId");
+  void getConnectivity() {
+    Connectivity().onConnectivityChanged.listen((result) {
+      //var _connectivityResult = result;
+      bool isConnected = result != ConnectivityResult.none;
+      print("=============$result");
+      print("=============$isConnected");
 
-        
-        print("else part who is not owner");
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          isOfflineProgressIndicator = !isConnected;
+        });
+
+        showSnackbar(
+            "${scrumSession?.activeParticipant?.name} lost network connection");
+        Timer(Duration(seconds: 20), () {
+          print("Executed after 1 minute");
+          if (!isConnected) {
+            print("Executed after 1 minute if olgade");
+            this.onNewParticipantRemoved(scrumSession!.activeParticipant!);
+          }
+        });
       }
-      // Code to execute when the browser is closed or navigated away
-      //delete the scrum session with the current id in firebase
-      //display msg to user that the session expired
-      //go back to previous page
-      //ExitSession(deleteSessionFromFirebase);
-      // setState(() {
-      //   // print(scrumSession!.participants);
+      if (result == ConnectivityResult.wifi) {
+        isOfflineProgressIndicator = !isConnected;
+        showSnackbar(
+            "${scrumSession!.activeParticipant?.name} restored network connection");
 
-      //   // scrumSession!.participants.clear();
-      //   // print('set state exe');
-      //   // print(scrumSession!.participants);
-      // });
-      print('Browser is closing or navigating away!');
+        () async {
+          ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+          DataSnapshot participantsJson = await spfb.participants;
+          Map _participantsListJson = participantsJson.value as Map;
+
+          var listOfParticipants = _participantsListJson.values
+              .map((participant) =>
+                  ScrumSessionParticipant.fromJSON(participant))
+              .toList();
+
+          print("values = ${participantsJson.value}");
+
+          listOfParticipants.forEach((element) {
+            print("in for each ${element.toJson()}");
+          });
+          print(listOfParticipants);
+          setState(() {
+            scrumSession!.participants = listOfParticipants;
+          });
+        }();
+      }
+      setState(() {
+        this.scrumSession?.updateParticipantConnectivity(context, isConnected);
+      });
+    });
+  }
+
+  void browserEventListeners() {
+    window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload get triggered");
+
+      //event.preventDefault();
+      // event.="Are you sure you want to leave thsis page???";
+      //window.confirm();
+
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      spfb.removeFromExistingSession();
     });
   }
 
@@ -91,6 +161,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         spfb.onNewStorySet(onNewStorySet);
         spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
         spfb.onShowCard(onShowCardsEventTriggered);
+        spfb.onEndSession(onEndSession);
+        spfb.onNewParticipantRemoved(onNewParticipantRemoved);
       });
     });
   }
@@ -103,8 +175,19 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void onNewParticipantAdded(newParticipant) {
     setState(() {
       this.scrumSession?.addParticipant(newParticipant);
-      showSnackbar();
     });
+  }
+
+  void onNewParticipantRemoved(ScrumSessionParticipant? oldParticipant) {
+    print("");
+    setState(() {
+      this.scrumSession?.removeParticipant(oldParticipant!);
+      showSnackbar('${oldParticipant!.name} left the session');
+    });
+  }
+
+  void onEndSession() {
+    widget.routerDelegate!.pushRoute("/session-ended");
   }
 
   void onNewStorySet(story) {
@@ -116,7 +199,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         participant.currentEstimate = '';
       });
       this.resetParticipantScrumCards = true;
-      this.iconLabel=false;
+      this.iconLabel = false;
     });
   }
 
@@ -136,7 +219,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     setState(() {
       this.showCards = value;
       if (value) {
-        this.angle = (angle + pi) % (2 * pi);
+        // this.angle = (angle + pi) % (2 * pi);
         print("angle after setting state:${this.angle}");
       }
     });
@@ -174,52 +257,73 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   @override
   Widget build(BuildContext context) {
+    //onSessionExit();
     return Material(
-        child: ScaffoldMessenger(
-      key: scaffoldMessengerKey,
-      child: Scaffold(
-        body: AnimatedContainer(
-            duration: Duration(microseconds: 300),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: buildScrumSessionPage(context)),
-        floatingActionButton: getDeviceWidth(context) < 600
-            ? SizedBox(
-                width: 90,
-                child: FloatingActionButton(
-                    tooltip: "Press to Select a Card",
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return ScrumCardList(
-
-                              onCardSelected: onCardSelected,
-                              resetCardList: this.resetParticipantScrumCards,
-                              isLocked: this.showCards);
-                        },
-                        backgroundColor:
-                            Theme.of(context).scaffoldBackgroundColor,
-                      );
-                    },
-                    child: iconLabel
+      child: ScaffoldMessenger(
+        key: scaffoldMessengerKey,
+        child: Scaffold(
+          body: AnimatedContainer(
+              duration: Duration(microseconds: 300),
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: buildScrumSessionPage(context)),
+          floatingActionButton: getDeviceWidth(context) < 600
+              ? Stack(
+                children: [
+                  FloatingActionButton(
+                      tooltip: "Press to Select a Card",
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return ScrumCardList(
+                                onCardSelected: onCardSelected,
+                                resetCardList:
+                                    this.resetParticipantScrumCards,
+                                isLocked: this.showCards);
+                          },
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                        );
+                      },
+                      child /*iconLabel
+                      //     ? Text(
+                      //         iconData,
+                      //         style: TextStyle(fontSize: 25.0),
+                      //       )*/
+                          : Icon(
+                        Icons.copy_outlined,
+                        size: 25.0,
+                      )),
+                  badges.Badge(
+                    shape: badges.BadgeShape.square,
+                    badgeContent: iconLabel
                         ? Text(
                             iconData,
-                            style: TextStyle(fontSize: 25.0),
+                            style: TextStyle(fontSize: 20.0,color: Colors.white),
+
                           )
-                        : Icon(
-                            Icons.copy_outlined,
-                            size: 25.0,
-                          )),
+                        : null,
+                    position: badges.BadgePosition.topEnd(),
+                    padding: EdgeInsetsDirectional.only(end: 0),
+                    badgeColor: const Color.fromARGB(255, 222, 243, 33),
+                    borderSide: BorderSide(style: BorderStyle.solid),
+                    elevation: 2,
+                    
+                  ),
+                ],
+                alignment: Alignment.topRight,
               )
-            : null,
+              : null,
+        ),
       ),
-    ));
+    );
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(
       children: [
-        pageHeader(context),
+        pageHeader(context, scrumSession, scrumSession?.activeParticipant,
+            widget.routerDelegate),
         ((this.showNewStoryInput == false)
             ? buildDisplayStoryPanel(
                 context,
@@ -233,7 +337,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                buildParticipantsPanel(context, showCards, angle),
+                buildParticipantsPanel(
+                  context,
+                  showCards,
+                ),
                 Divider(
                   color: Colors.white38,
                 ).margin(top: 8.0, bottom: 8.0),
@@ -274,25 +381,23 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     );
   }
 
-  Widget buildParticipantsPanel(BuildContext context, showEstimates, angle) {
-    return Column(
-      children: [
-        Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: scrumSession?.participants
-                    .map((participant) => participantCard(
-                        context, participant, showEstimates, angle))
-                    .toList() ??
-                []),
-      ],
-    );
+  Widget buildParticipantsPanel(BuildContext context, showEstimates) {
+    //print(" --In build of ParticipantPanel ${scrumSession!.participants}");
+    return Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: scrumSession?.participants
+                .map((participant) => participantCard(context, participant,
+                    showEstimates, isOfflineProgressIndicator))
+                .toList() ??
+            []);
   }
 
-  void showSnackbar() {
+  void showSnackbar(String msg) {
+    scaffoldMessengerKey.currentState!.clearSnackBars();
     scaffoldMessengerKey.currentState!.showSnackBar(
       SnackBar(
-        content: Text('This is a Snackbar'),
-        duration: Duration(seconds: 2),
+        content: Text(msg),
+        duration: Duration(seconds: 5),
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
