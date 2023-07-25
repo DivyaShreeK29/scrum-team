@@ -269,67 +269,67 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     }
   }
 
+  void showSnackbar(String msg) {
+    scaffoldMessengerKey.currentState!.clearSnackBars();
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Perform an action when the Snackbar action button is pressed
+            // For example, you can dismiss the Snackbar
+            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //onSessionExit();
     return Material(
-      child: ScaffoldMessenger(
-        key: scaffoldMessengerKey,
-        child: Scaffold(
-          body: AnimatedContainer(
-              duration: Duration(microseconds: 300),
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: buildScrumSessionPage(context)),
-          floatingActionButton: getDeviceWidth(context) < 600
-              ? Stack(
-                  children: [
-                    FloatingActionButton(
-                        tooltip: "Press to Select a Card",
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return ScrumCardList(
-                                  onCardSelected: onCardSelected,
-                                  resetCardList:
-                                      this.resetParticipantScrumCards,
-                                  isLocked: this.showCards);
-                            },
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                          );
-                        },
-                        child /*iconLabel
-                      //     ? Text(
-                      //         iconData,
-                      //         style: TextStyle(fontSize: 25.0),
-                      //       )*/
-                            : Icon(
-                          Icons.copy_outlined,
-                          size: 25.0,
-                        )),
-                    badges.Badge(
-                      shape: badges.BadgeShape.square,
-                      badgeContent: iconLabel
-                          ? Text(
-                              iconData,
-                              style: TextStyle(
-                                  fontSize: 20.0, color: Colors.white),
-                            )
-                          : null,
-                      position: badges.BadgePosition.topEnd(),
-                      padding: EdgeInsetsDirectional.only(end: 0),
-                      badgeColor: const Color.fromARGB(255, 222, 243, 33),
-                      borderSide: BorderSide(style: BorderStyle.solid),
-                      elevation: 2,
-                    ),
-                  ],
-                  alignment: Alignment.topRight,
-                )
-              : null,
-        ),
+        child: ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Scaffold(
+        body: AnimatedContainer(
+            duration: Duration(microseconds: 300),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: buildScrumSessionPage(context)),
+        floatingActionButton: getDeviceWidth(context) < 600
+            ? SizedBox(
+                width: 90,
+                child: FloatingActionButton(
+                  tooltip: "Press to Select a Card",
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return ScrumCardList(
+                            onCardSelected: onCardSelected,
+                            resetCardList: this.resetParticipantScrumCards,
+                            isLocked: this.showCards);
+                      },
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                    );
+                  },
+                  child: iconLabel
+                      ? Text(
+                          iconData,
+                          style: TextStyle(fontSize: 25.0),
+                        )
+                      : ImageIcon(
+                          AssetImage("assets/images/playing_cards_icon.png"),
+                          size: 30.0,
+                        ),
+                ),
+              )
+            : null,
       ),
-    );
+    ));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
@@ -403,23 +403,5 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
                     showEstimates, isOfflineProgressIndicator))
                 .toList() ??
             []);
-  }
-
-  void showSnackbar(String msg) {
-    scaffoldMessengerKey.currentState!.clearSnackBars();
-    scaffoldMessengerKey.currentState!.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        duration: Duration(seconds: 5),
-        action: SnackBarAction(
-          label: 'Close',
-          onPressed: () {
-            // Perform an action when the Snackbar action button is pressed
-            // For example, you can dismiss the Snackbar
-            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
-          },
-        ),
-      ),
-    );
   }
 }

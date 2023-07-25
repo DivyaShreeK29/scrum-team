@@ -126,18 +126,6 @@ class ScrumPokerFirebase {
     print("get scrum session method Key --> ${this.activeParticipant}");
     scrumSession!.activeParticipantKey = this.activeParticipantkey;
     this.sessionInitializationCallback(scrumSession);
-    // dbReference.child(sessionId).once(DatabaseEventType.value).then((event) {
-    //   dynamic jsonData = event.snapshot.toJson();
-    //   scrumSession = ScrumSession.fromJson(jsonData);
-    //   if (this.activeParticipant == null) {
-    //     this.activeParticipant = getExistingActiveParticipant(sessionId);
-    //   }
-    //   scrumSession!.activeParticipant = this.activeParticipant;
-    //   this.activeParticipantkey =
-    //       getParticipantKey(activeParticipant, jsonData["participants"]);
-    //   scrumSession!.activeParticipantKey = this.activeParticipantkey;
-    //   this.sessionInitializationCallback(scrumSession);
-    // });
   }
 
   Future<dynamic> joinScrumSession(
@@ -321,13 +309,15 @@ class ScrumPokerFirebase {
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
-      print("listener----------------${event.snapshot.value}");
-      //    Map<String, dynamic>? sessionData =
-      //     event.snapshot.value as Map<String, dynamic>?;
-      // ScrumSession ss = ScrumSession.fromJson(sessionData);
-      //   print(ss.id);
 
-      callback();
+      
+
+      var E = event.snapshot.value as Map;
+
+
+      if (scrumSession!.id == E['id']) {
+        callback();
+      }
     });
   }
 }
@@ -387,17 +377,11 @@ void removeAllDataFromSharedPreferences() async {
 
 //HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
 // Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
-//    Map<String, dynamic> jsonMap = Map<String, dynamic>();
-//   String onlyElementString = toConvert.substring(1, toConvert.length - 1);
-//   print(onlyElementString);
-//   List elementPair = onlyElementString.split(",");
 
-//   elementPair.forEach((element) {
-//     List nameValue = element.split(":");
-//     print(nameValue);
-//     jsonMap[nameValue.elementAt(0).trim()] = nameValue.elementAt(1).trim();
-//   });
-//   return jsonMap;
-// }
-//Future<void> removeExistingSession() async
 
+// {id: f81e0900-2ab1-11ee-baa9-89a6519d1a08,
+//  name: ghjk,
+//   participants: {-NaAevtbkzL3UGeH70f9: {id: 231, name: s, owner: true}},
+// showCards: false,
+//  startTime: 2023-07-25T06:10:35.540Z, 
+//  summary: {totalPoints: 0, totalStories: 0}}
