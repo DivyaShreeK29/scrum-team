@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-//import 'package:badges/badges.dart' as badges;
+
 
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
