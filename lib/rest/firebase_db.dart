@@ -69,7 +69,7 @@ class ScrumPokerFirebase {
       String sessionName, String sessionOwnerName) async {
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
+    await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
     String sessionId = ScrumSession.newID();
     await dbReference.child(sessionId).set({
@@ -101,7 +101,7 @@ class ScrumPokerFirebase {
   }
 
   void getScrumSession(String sessionId) async {
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
+    await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
     DatabaseEvent event =
         await dbReference.child(sessionId).once(DatabaseEventType.value);
@@ -123,7 +123,7 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner = false}) async {
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
+    await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
@@ -278,10 +278,7 @@ class ScrumPokerFirebase {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
 
-      
-
       var E = event.snapshot.value as Map;
-
 
       if (scrumSession!.id == E['id']) {
         callback();
