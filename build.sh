@@ -1,4 +1,3 @@
-flutter upgrade
 flutter clean
 rm -rf pubspec.lock
 rm -rf build
