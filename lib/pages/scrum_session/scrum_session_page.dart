@@ -5,11 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-//import 'package:internet_connection_checker/internet_connection_checker.dart';
-//import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
-//import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
@@ -18,7 +15,6 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-//import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
 
@@ -92,28 +88,17 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
-    // connectivityService.startMonitoring((participants) {
-    //   setState(() {
-    //     this.scrumSession?.participants =
-    //         participants as List<ScrumSessionParticipant>;
-    //     this.scrumSession?.updateParticipantConnectivity(context);
-    //   });
-    // });
+    
 
     getConnectivity();
     browserEventListeners();
-    //appElement =
-    // html.querySelector('#app'); // Replace 'app' with your app element ID
-
-    //set callbacks into the session
+    
   }
 
   void getConnectivity() {
     Connectivity().onConnectivityChanged.listen((result) {
-      //var _connectivityResult = result;
       bool isConnected = result != ConnectivityResult.none;
-      print("=============$result");
-      print("=============$isConnected");
+     
 
       if (result == ConnectivityResult.none) {
         setState(() {
@@ -166,10 +151,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     window.onBeforeUnload.listen((event) async {
       print("onBeforeUnload get triggered");
 
-      //event.preventDefault();
-      // event.="Are you sure you want to leave thsis page???";
-      //window.confirm();
-
       ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
       spfb.removeFromExistingSession();
     });
@@ -190,8 +171,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void scrumSessionInitializationFailed(error) {
-    // ignore: todo
-    //todo: implement erro handling
+  
   }
 
   void onNewParticipantAdded(newParticipant) {
@@ -201,14 +181,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onNewParticipantRemoved(ScrumSessionParticipant? oldParticipant) {
-    print(
-        "_______________________________----------------____________________-");
-    // print(scrumSession?.activeParticipant?.name);
-    // print(oldParticipant?.name);
-
-    //if (scrumSession?.activeParticipant == oldParticipant) {
-    // widget.routerDelegate!.popRoute();
-    // } else {
+   
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant!);
       showSnackbar('${oldParticipant!.name} left the session');
@@ -233,7 +206,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onNewStoryPressed() {
-    //  ScrumPokerFirebase.instance.setActiveStory(null, null, null);
     setState(() {
       this.showNewStoryInput = true;
     });
@@ -287,8 +259,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
-            // Perform an action when the Snackbar action button is pressed
-            // For example, you can dismiss the Snackbar
+            
             scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
           },
         ),
@@ -298,7 +269,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    //onSessionExit();
     return Material(
         child: ScaffoldMessenger(
       key: scaffoldMessengerKey,
@@ -372,7 +342,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   Widget buildParticipantsPanel(BuildContext context, showEstimates) {
-    //print(" --In build of ParticipantPanel ${scrumSession!.participants}");
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants
