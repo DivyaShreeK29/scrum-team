@@ -1,8 +1,6 @@
 /* groovylint-disable LineLength */
 pipeline {
   agent any
-  environment {
-  }
   stages {
     stage('Build') {
       steps {
