@@ -43,7 +43,7 @@ void showToastMessage(String msg) {
     textColor: Colors.white, // Text color of the toast message
     fontSize: 16.0, // Font size of the toast message
   );
-  //print("Host has exited");
+ 
 }
 
 ///✓
