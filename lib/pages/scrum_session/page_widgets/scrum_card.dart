@@ -4,7 +4,7 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
-import '../../../widgets/ui/style.dart';
+
 
 class ScrumCard extends StatefulWidget {
   final dynamic onCardSelected;

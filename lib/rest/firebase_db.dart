@@ -67,7 +67,7 @@ class ScrumPokerFirebase {
   DatabaseReference get dbReference => _db!.ref("sessions");
   FirebaseAuth get authenticate => _auth!;
 
-
+  get firebase => null;
 
   ///Starts a new scrum session [sessionName]
   ///that is owned [sessionOwnerName] . This owner gets all the control like
@@ -79,6 +79,8 @@ class ScrumPokerFirebase {
         email: "jay@scrumpoker.com", password: "asdfgh");
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
+    await authenticate.signInWithEmailAndPassword(
+        email: "jay@scrumpoker.com", password: "asdfgh");
     String sessionId = ScrumSession.newID();
     await dbReference.child(sessionId).set({
       "id": sessionId,
@@ -93,8 +95,7 @@ class ScrumPokerFirebase {
         dbReference.child(sessionId).child("participants").push();
     partcipantRef.set(participant.toJson());
     this.activeParticipant = participant;
-    //session being started by the scrum master hence, save the participant
-    //details
+ 
     saveActiveParticipant(sessionId, participant);
     return sessionId;
   }
@@ -109,7 +110,7 @@ class ScrumPokerFirebase {
   }
 
   void getScrumSession(String sessionId) async {
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
+    await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
     DatabaseEvent event =
         await dbReference.child(sessionId).once(DatabaseEventType.value);
@@ -132,7 +133,7 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner = false}) async {
-    UserCredential user = await authenticate.signInWithEmailAndPassword(
+    await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");
     
    
@@ -143,9 +144,8 @@ class ScrumPokerFirebase {
 
 
     if (participant == null) {
-      print("in JoinscrumSession Method is participant is null $participant");
-
-      //no active participant stored for this session in shared preferences
+      
+      
       participant = ScrumSessionParticipant(
           participantName, owner, ScrumSessionParticipant.newID(), null);
 
@@ -156,17 +156,7 @@ class ScrumPokerFirebase {
       saveActiveParticipant(sessionId, participant);
       print("after join scrum session $participant");
     }
-    // else{
-    //   participant = ScrumSessionParticipant(
-    //       participantName, owner, ScrumSessionParticipant.newID(), null);
-    //   DatabaseReference partcipantRef =
-    //       dbReference.child(sessionId).child("participants").push();
-    //   await partcipantRef.set(participant.toJson());
-    //   this.activeParticipant = participant;
-    //   saveActiveParticipant(sessionId, participant);
-
-    // }
-    print("jsso");
+   
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -308,12 +298,9 @@ class ScrumPokerFirebase {
 
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
-      // routing to end page
-
       
 
       var E = event.snapshot.value as Map;
-
 
       if (scrumSession!.id == E['id']) {
         callback();
@@ -322,16 +309,12 @@ class ScrumPokerFirebase {
   }
 }
 
-///returns a saved [ScrumSession] object if the [sessionId] of incoming url
-///matches the existing session id stored locally else returns null object
+
 ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   print("Inside getExistingActiveParticipant $sessionId");
   ScrumSession? session;
   String? existingSessionString =
       preferences?.getString(PreferenceKeys.CURRENT_SESSION);
-  print("in geap");
-  print(existingSessionString);
-  print("in geap1");
   String? activeParticipantString =
       preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT);
   if (existingSessionString != null) {
@@ -346,8 +329,6 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
 
       return participant;
     } else {
-          print("Inside getExistingActiveParticipant $participant");
-
       //if the session id does not match then the user is logging into a new
       //sessoin, so reinitialize the session to null
       return null;
@@ -356,8 +337,7 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   return null;
 }
 
-/// saves  [ScrumSessionParticipant] from shared preferences so it can be
-/// retrieved in case the sessoin breaks in between
+
 
 void saveActiveParticipant(
     String sessionId, ScrumSessionParticipant participant) {
@@ -370,15 +350,11 @@ void saveActiveParticipant(
   print(preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT));
 }
 
+
 void removeAllDataFromSharedPreferences() async {
   print("Inside removeALldata");
   await preferences?.clear();
 }
-
-//HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
-// Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
-
-
 // {id: f81e0900-2ab1-11ee-baa9-89a6519d1a08,
 //  name: ghjk,
 //   participants: {-NaAevtbkzL3UGeH70f9: {id: 231, name: s, owner: true}},

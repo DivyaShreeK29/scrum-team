@@ -1,10 +1,10 @@
-// import 'dart:io';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../widgets/ui/typograpy_widgets.dart';
-//import 'package:scrum_poker/pages/scrum_session/scrum_session_page.dart';
+
 
 class ExitPage extends StatelessWidget {
   const ExitPage({Key? key}) : super(key: key);
@@ -26,7 +26,7 @@ class ExitPage extends StatelessWidget {
                         context: context,
                         text: "Scrum Poker",
                         color: Colors.white),
-                    //Divider()
+                
                   ]),
               elevation: 0.0,
               bottomOpacity: 0.0,
@@ -43,6 +43,7 @@ class ExitPage extends StatelessWidget {
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
+                 
                     SystemNavigator.pop();
                   },
                 ),

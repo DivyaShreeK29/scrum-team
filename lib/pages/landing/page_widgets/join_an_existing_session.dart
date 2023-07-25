@@ -72,7 +72,6 @@ Widget joinAnExistingSession(
                         if (joinWithLink) {
                           sessionId = scrumSession!.id!;
                         }
-                        // if (!joinWithLink) {
                         ScrumPokerFirebase spfb =
                             await ScrumPokerFirebase.instance;
                         await spfb.joinScrumSession(
@@ -94,7 +93,6 @@ Widget joinAnExistingSession(
   );
 }
 
-//returns the appropriate description in the header line based on the statement of the session
 String getDescription(bool joinWithLink, ScrumSession? session) {
   String description = "Please enter a nick name and press join";
   if (joinWithLink && session != null) {

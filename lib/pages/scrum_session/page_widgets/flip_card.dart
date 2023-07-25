@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 
-import '../../../model/scrum_session_participant_model.dart';
+
 
 Widget flipParticipantCard(
     BuildContext context,

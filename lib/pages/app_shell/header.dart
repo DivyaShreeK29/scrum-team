@@ -1,32 +1,27 @@
-// ignore_for_file: dead_code
-
-//import 'dart:js_util';
 
 import 'package:flutter/material.dart';
+
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
-//import 'package:scrum_poker/pages/navigation/navigation_router.dart';
-import 'package:scrum_poker/rest/firebase_db.dart';
-//import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
-import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
-//import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
 
-//import '../../model/scrum_session_participant_model.dart';
+import 'package:scrum_poker/rest/firebase_db.dart';
+
+import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
+
 
 import '../../model/scrum_session_participant_model.dart';
 import '../../widgets/ui/style.dart';
+
 
 Widget pageHeader(BuildContext context, ScrumSession? session,
     ScrumSessionParticipant? participant, AppRouterDelegate? routerDelegate) {
   return AppBar(
     actions: [
-      //SizedBox(width: 200),
       CancelButton(session, participant, routerDelegate),
     ],
     centerTitle: false,
     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       heading6(context: context, text: "Scrum Poker", color: Colors.white),
-      //Divider()
     ]),
     elevation: 0.0,
     bottomOpacity: 0.0,
@@ -47,12 +42,10 @@ class CancelButton extends StatefulWidget {
 }
 
 class _CancelButtonState extends State<CancelButton> {
-  // bool textCheck = true;
   String returnText() {
     if (widget.participant?.isOwner ?? false)
       return "END SESSION";
     else {
-      //textCheck = false;
       return "LEAVE SESSION";
     }
   }
@@ -66,10 +59,9 @@ class _CancelButtonState extends State<CancelButton> {
   }
 
   @override
-//
+
   Widget build(BuildContext context) {
-    return //
-        getDeviceWidth(context) > 600
+    return   getDeviceWidth(context) > 600
             ? TextButton.icon(
                 onPressed: () {
                   removeParticipantFromScrumSession();

@@ -1,4 +1,4 @@
-//import 'package:scrum_poker/main.dart';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:uuid/uuid.dart';
 
-///  Represents a Scrum Session
+// Represents a Scrum Session
 
 class ScrumSession {
   String? name;
@@ -58,28 +58,19 @@ class ScrumSession {
         .participants
         .firstWhere((element) => (element.id) == participant.id));
 
-    //this.participants.removeWhere((element) => (element.id) == participant.id);
+    
   }
 
   void updateParticipantConnectivity(BuildContext context, bool isConnected) {
-    print(this.activeParticipant?.name);
-
-    // ScrumSessionParticipant part = this.participants.elementAt(
-    //     this.participants.indexWhere((p) => p.id == (participant?.id)));
+  
     activeParticipant?.connectivityController = isConnected;
-    print(
-        "=====participant----------${activeParticipant?.connectivityController}");
-    //part.connectivityController = isConnected;
-    //print(
-    //   "Inside update participant is connected ${part.connectivityController}");
 
     if (!activeParticipant!.connectivityController) {
-      //print("Inside show dialog if block ${part.connectivityController}");
-      //{**}
+      
       showAboutDialog(context);
     } else {
       dismissDialog(context);
-      //print("Inside show dialog else block ${part.connectivityController}");
+     
     }
   }
 
@@ -127,9 +118,3 @@ class ScrumSession {
 
 
 
-// main() {
-//   ScrumSession session = ScrumSession(
-//       name: "FirstSession", startTime: DateTime.now());
-//   session.addParticipant(ScrumSessionParticipant("Jay", true));
-//   print(session.toJson());
-// }
