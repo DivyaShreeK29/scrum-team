@@ -3,6 +3,7 @@
 //import 'dart:js_util';
 
 import 'package:flutter/material.dart';
+
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 //import 'package:scrum_poker/pages/navigation/navigation_router.dart';
@@ -15,6 +16,7 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 
 import '../../model/scrum_session_participant_model.dart';
 import '../../widgets/ui/style.dart';
+
 
 Widget pageHeader(BuildContext context, ScrumSession? session,
     ScrumSessionParticipant? participant, AppRouterDelegate? routerDelegate) {
