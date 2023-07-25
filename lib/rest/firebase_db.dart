@@ -129,7 +129,7 @@ class ScrumPokerFirebase {
         getExistingActiveParticipant(sessionId);
 
     if (participant == null) {
-      print("jss${participant}");
+      
       //no active participant stored for this session in shared preferences
       participant = ScrumSessionParticipant(
           participantName, owner, ScrumSessionParticipant.newID(), null);
@@ -139,7 +139,7 @@ class ScrumPokerFirebase {
       this.activeParticipant = participant;
       saveActiveParticipant(sessionId, participant);
     }
-    print("jsso");
+   
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -276,7 +276,7 @@ class ScrumPokerFirebase {
 
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
-      // routing to end page
+      
 
       var E = event.snapshot.value as Map;
 
@@ -287,8 +287,7 @@ class ScrumPokerFirebase {
   }
 }
 
-///returns a saved [ScrumSession] object if the [sessionId] of incoming url
-///matches the existing session id stored locally else returns null object
+
 ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
   ScrumSession? session;
   String? existingSessionString =
@@ -306,16 +305,14 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
     if (session.id == sessionId) {
       return participant;
     } else {
-      //if the session id does not match then the user is logging into a new
-      //sessoin, so reinitialize the session to null
+      
       return null;
     }
   }
   return null;
 }
 
-/// saves  [ScrumSessionParticipant] from shared preferences so it can be
-/// retrieved in case the sessoin breaks in between
+
 
 void saveActiveParticipant(
     String sessionId, ScrumSessionParticipant participant) {
@@ -332,9 +329,4 @@ void removeAllDataFromSharedPreferences() async {
   print("Inside removeALldata");
   await preferences?.clear();
 }
-// {id: f81e0900-2ab1-11ee-baa9-89a6519d1a08,
-//  name: ghjk,
-//   participants: {-NaAevtbkzL3UGeH70f9: {id: 231, name: s, owner: true}},
-// showCards: false,
-//  startTime: 2023-07-25T06:10:35.540Z, 
-//  summary: {totalPoints: 0, totalStories: 0}}
+
