@@ -71,7 +71,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   String iconData = "";
   bool iconLabel = false;
   bool isOfflineProgressIndicator = false;
-  //ConnectivityService connectivityService = ConnectivityService();
+
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
