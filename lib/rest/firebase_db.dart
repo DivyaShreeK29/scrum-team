@@ -85,8 +85,7 @@ class ScrumPokerFirebase {
         dbReference.child(sessionId).child("participants").push();
     partcipantRef.set(participant.toJson());
     this.activeParticipant = participant;
-    //session being started by the scrum master hence, save the participant
-    //details
+ 
     saveActiveParticipant(sessionId, participant);
     return sessionId;
   }
@@ -130,7 +129,7 @@ class ScrumPokerFirebase {
 
     if (participant == null) {
       
-      //no active participant stored for this session in shared preferences
+      
       participant = ScrumSessionParticipant(
           participantName, owner, ScrumSessionParticipant.newID(), null);
       DatabaseReference partcipantRef =
