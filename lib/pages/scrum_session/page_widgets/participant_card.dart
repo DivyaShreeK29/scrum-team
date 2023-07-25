@@ -92,28 +92,16 @@ Widget participantCard(
                         ),
                         // body1(context: context, text: participant.name)
                         //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ((val > (pi / 2)) && showEstimates)
-                                ? MirrorText(body1(
-                                        context: context,
-                                        text: participant.name))
-                                    .paddingLRTB(
-                                        left: 4, right: 4, top: 4, bottom: 8)
-                                : body1(
-                                        context: context,
-                                        text: participant.name)
-                                    .paddingLRTB(
-                                        left: 4, right: 4, top: 4, bottom: 8),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            isOfflineProgressIndicator
-                                ? LinearProgressIndicator()
-                                : Text(""),
-                          ],
-                        )
+                        if (isOfflineProgressIndicator)
+                          LinearProgressIndicator(),
+                        ((val > (pi / 2)) && showEstimates)
+                            ? MirrorText(body1(
+                                    context: context, text: participant.name))
+                                .paddingLRTB(
+                                    left: 4, right: 4, top: 4, bottom: 8)
+                            : body1(context: context, text: participant.name)
+                                .paddingLRTB(
+                                    left: 4, right: 4, top: 4, bottom: 8),
                       ],
                     ),
                   ),
@@ -190,28 +178,17 @@ Widget participantCard(
                         ),
                         // body1(context: context, text: participant.name)
                         //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ((val > (pi / 2)) && showEstimates)
-                                ? MirrorText(body1(
-                                        context: context,
-                                        text: participant.name))
-                                    .paddingLRTB(
-                                        left: 8, right: 8, top: 8, bottom: 16)
-                                : body1(
-                                        context: context,
-                                        text: participant.name)
-                                    .paddingLRTB(
-                                        left: 8, right: 8, top: 8, bottom: 16),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            isOfflineProgressIndicator
-                                ? CircularProgressIndicator()
-                                : Text(""),
-                          ],
-                        )
+                        if (isOfflineProgressIndicator)
+                          LinearProgressIndicator(),
+
+                        ((val > (pi / 2)) && showEstimates)
+                            ? MirrorText(body1(
+                                    context: context, text: participant.name))
+                                .paddingLRTB(
+                                    left: 8, right: 8, top: 8, bottom: 16)
+                            : body1(context: context, text: participant.name)
+                                .paddingLRTB(
+                                    left: 8, right: 8, top: 8, bottom: 16),
                       ],
                     ),
                   ),

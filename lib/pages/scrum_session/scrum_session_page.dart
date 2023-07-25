@@ -122,7 +122,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
         showSnackbar(
             "${scrumSession?.activeParticipant?.name} lost network connection");
-        Timer(Duration(seconds: 20), () {
+        Timer(Duration(seconds: 60), () {
           print("Executed after 1 minute");
           if (!isConnected) {
             print("Executed after 1 minute if olgade");

@@ -290,6 +290,10 @@ class ScrumPokerFirebase {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
       print("listener----------------${event.snapshot.value}");
+      //    Map<String, dynamic>? sessionData =
+      //     event.snapshot.value as Map<String, dynamic>?;
+      // ScrumSession ss = ScrumSession.fromJson(sessionData);
+      //   print(ss.id);
 
       callback();
     });
