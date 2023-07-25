@@ -4,7 +4,7 @@ import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 
-import './display_story_panel.dart';
+
 
 Widget buildCreateStoryPanel(BuildContext context) {
   TextEditingController storyId = TextEditingController();
