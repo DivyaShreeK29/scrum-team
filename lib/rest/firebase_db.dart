@@ -277,9 +277,11 @@ class ScrumPokerFirebase {
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
-      print("listener----------------${event.snapshot.value}");
+      var E = event.snapshot.value as Map;
 
-      callback();
+      if (scrumSession!.id == E['id']) {
+        callback();
+      }
     });
   }
 }
@@ -329,3 +331,9 @@ void removeAllDataFromSharedPreferences() async {
   print("Inside removeALldata");
   await preferences?.clear();
 }
+// {id: f81e0900-2ab1-11ee-baa9-89a6519d1a08,
+//  name: ghjk,
+//   participants: {-NaAevtbkzL3UGeH70f9: {id: 231, name: s, owner: true}},
+// showCards: false,
+//  startTime: 2023-07-25T06:10:35.540Z, 
+//  summary: {totalPoints: 0, totalStories: 0}}

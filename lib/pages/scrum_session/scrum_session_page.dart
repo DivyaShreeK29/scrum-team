@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 //import 'package:internet_connection_checker/internet_connection_checker.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -14,13 +15,16 @@ import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
+//import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
 
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../../widgets/ui/style.dart';
 
 //import '../connectivity/connectivity.dart';
 // ignore: avoid_web_libraries_in_flutter
@@ -68,7 +72,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
   final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-
+  String iconData = "";
+  bool iconLabel = false;
   bool isOfflineProgressIndicator = false;
   //ConnectivityService connectivityService = ConnectivityService();
 
@@ -223,6 +228,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         participant.currentEstimate = '';
       });
       this.resetParticipantScrumCards = true;
+      this.iconLabel = false;
     });
   }
 
@@ -248,6 +254,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     this.resetParticipantScrumCards = false;
     ScrumPokerFirebase.instance.then(
         (ScrumPokerFirebase spfb) => spfb.setStoryEstimate(selectedValue));
+    iconLabel = true;
+    iconData = selectedValue;
   }
 
   onStoryEstimatesChanged(participantEstimates) {
@@ -292,17 +300,45 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   Widget build(BuildContext context) {
     //onSessionExit();
     return Material(
-      child: ScaffoldMessenger(
-        key: scaffoldMessengerKey,
-        child: Scaffold(
-          body: AnimatedContainer(
+        child: ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Scaffold(
+        body: AnimatedContainer(
             duration: Duration(microseconds: 300),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: buildScrumSessionPage(context),
-          ),
-        ),
+            child: buildScrumSessionPage(context)),
+        floatingActionButton: getDeviceWidth(context) < 600
+            ? SizedBox(
+                width: 90,
+                child: FloatingActionButton(
+                  tooltip: "Press to Select a Card",
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return ScrumCardList(
+                            onCardSelected: onCardSelected,
+                            resetCardList: this.resetParticipantScrumCards,
+                            isLocked: this.showCards);
+                      },
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                    );
+                  },
+                  child: iconLabel
+                      ? Text(
+                          iconData,
+                          style: TextStyle(fontSize: 25.0),
+                        )
+                      : ImageIcon(
+                          AssetImage("assets/images/playing_cards_icon.png"),
+                          size: 30.0,
+                        ),
+                ),
+              )
+            : null,
       ),
-    );
+    ));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
@@ -319,21 +355,19 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
               scrumSession)
           : buildCreateStoryPanel(context)),
       Expanded(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildParticipantsPanel(context, showCards),
-              Divider(
-                color: Colors.white38,
-              ).margin(top: 8.0, bottom: 8.0),
-              ScrumCardList(
-                  onCardSelected: onCardSelected,
-                  resetCardList: this.resetParticipantScrumCards,
-                  isLocked: this.showCards)
-            ],
-          ),
-        ),
-      )
+          child: SingleChildScrollView(
+              child: Column(children: [
+        buildParticipantsPanel(context, showCards),
+        Divider(
+          color: Colors.white38,
+        ).margin(top: 8.0, bottom: 8.0),
+        getDeviceWidth(context) > 600
+            ? ScrumCardList(
+                onCardSelected: onCardSelected,
+                resetCardList: this.resetParticipantScrumCards,
+                isLocked: this.showCards)
+            : Text("")
+      ])))
     ]);
   }
 
