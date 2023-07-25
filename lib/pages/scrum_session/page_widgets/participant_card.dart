@@ -19,7 +19,7 @@ Widget participantCard(
 ) {
   return getDeviceWidth(context) < 600
       ? (AnimatedContainer(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 500),
           curve: Curves.easeIn,
           height: (participant.currentEstimate != null &&
                   participant.currentEstimate != '')
@@ -90,8 +90,7 @@ Widget participantCard(
                             ),
                           ),
                         ),
-                        // body1(context: context, text: participant.name)
-                        //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+                       
                         if (isOfflineProgressIndicator)
                           LinearProgressIndicator(),
                         ((val > (pi / 2)) && showEstimates)
@@ -108,7 +107,7 @@ Widget participantCard(
                 ));
               })).fadeInOut())
       : AnimatedContainer(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 500),
           curve: Curves.easeIn,
           height: (participant.currentEstimate != null &&
                   participant.currentEstimate != '')
@@ -176,8 +175,8 @@ Widget participantCard(
                             ),
                           ),
                         ),
-                        // body1(context: context, text: participant.name)
-                        //     .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16),
+
+
                         if (isOfflineProgressIndicator)
                           LinearProgressIndicator(),
 

@@ -37,13 +37,10 @@ Widget joinAnExistingSession(
                 controller: existingSessionController,
                 decoration: InputDecoration(hintText: "Enter the session URL"),
                 validator: (value) {
-                  print("++++++++++++$value");
+                  print("$value");
                   if (value!.isEmpty) {
                     return 'Session link is required';
                   }
-                  // } else if (value.contains(scrumSession!.id!)) {
-                  //   return 'Session does not exist is required';
-                  // }
 
                   print(value.substring(value.lastIndexOf('/') + 1));
                   processedSessionId =
