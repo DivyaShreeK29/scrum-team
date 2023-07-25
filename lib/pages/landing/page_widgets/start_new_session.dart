@@ -47,7 +47,6 @@ Widget startNewSession(BuildContext context, AppRouterDelegate routerDelegate) {
                   return null;
                 },
               ),
-              // SizedBox(height: 20),
               SizedBox(height: 20),
               Center(
                 child: TextButton(
