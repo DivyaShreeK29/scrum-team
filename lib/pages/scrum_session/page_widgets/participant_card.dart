@@ -38,7 +38,7 @@ Widget participantCard(
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, 0.001)
                     ..rotateY(val),
-                  // Adjust the angle as desired
+                 
                   child: Card(
                     elevation: 3.0,
                     shape: RoundedRectangleBorder(
@@ -126,7 +126,7 @@ Widget participantCard(
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, 0.001)
                     ..rotateY(val),
-                  // Adjust the angle as desired
+
                   child: Card(
                     elevation: 3.0,
                     shape: RoundedRectangleBorder(
@@ -202,8 +202,8 @@ Widget buildParticipantCards(
   bool isOfflineProgressIndicator,
 ) {
   return Wrap(
-    spacing: 2.0, // Adjust the horizontal spacing between cards here
-    runSpacing: 2.0, // Adjust the vertical spacing between cards here
+    spacing: 2.0, 
+    runSpacing: 2.0, 
     children: participants.map((participant) {
       return participantCard(
         context,
