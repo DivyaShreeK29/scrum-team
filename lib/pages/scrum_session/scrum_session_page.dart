@@ -31,23 +31,7 @@ import '../../widgets/ui/style.dart';
 
 //html.Element? appElement; // Reference to your app element
 
-void showToastMessage(String msg) {
-  // Replace with your own toast implementation or package
 
-  Fluttertoast.showToast(
-    msg: msg,
-    toastLength:
-        Toast.LENGTH_SHORT, // Duration for which the toast should be visible
-    gravity: ToastGravity
-        .BOTTOM_RIGHT, // Position of the toast message on the screen
-    timeInSecForIosWeb:
-        5, // Specific to iOS/web platforms, the duration for which the toast should be visible
-    backgroundColor: Colors.black87, // Background color of the toast message
-    textColor: Colors.white, // Text color of the toast message
-    fontSize: 16.0, // Font size of the toast message
-  );
-  //print("Host has exited");
-}
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {

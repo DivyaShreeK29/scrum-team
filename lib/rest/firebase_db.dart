@@ -42,17 +42,14 @@ class ScrumPokerFirebase {
   static Future<ScrumPokerFirebase> get instance async {
     if (_scrumPokerDB == null) {
       FirebaseOptions appOptions = FirebaseOptions(
-          apiKey: "AIzaSyCJTcgku4Cyg62svj_kCM8e1BPDlD8WPsE",
-          appId: "1:315539366379:web:db33c5c6554e5c6fbcb9ae",
-          messagingSenderId: "315539366379",
-          projectId: "scrum-poker-devdb",
-          authDomain: "scrum-poker-devdb.firebaseapp.com",
-          
-          databaseURL:
-              "https://scrum-poker-devdb-default-rtdb.asia-southeast1.firebasedatabase.app/",
-          // measurementId: "G-CH265MWWBG",
-          storageBucket: "scrum-poker-devdb.appspot.com");
-             
+          apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
+  authDomain: "scrum-poker-b2819.firebaseapp.com",
+  databaseURL: "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "scrum-poker-b2819",
+  storageBucket: "scrum-poker-b2819.appspot.com",
+  messagingSenderId: "708840805223",
+  appId: "1:708840805223:web:3566cd157397d6679455c2",
+  measurementId: "G-CH265MWWBG");
       FirebaseApp scrumPokerApp =
           await Firebase.initializeApp(options: appOptions);
       FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
@@ -76,11 +73,11 @@ class ScrumPokerFirebase {
   Future<String> startNewScrumSession(
       String sessionName, String sessionOwnerName) async {
         UserCredential user = await authenticate.signInWithEmailAndPassword(
-        email: "jay@scrumpoker.com", password: "asdfgh");
+        email: "jay@scrumpoker.com", password: "JSDNPV");
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
     await authenticate.signInWithEmailAndPassword(
-        email: "jay@scrumpoker.com", password: "asdfgh");
+        email: "jay@scrumpoker.com", password: "JSDNPV");
     String sessionId = ScrumSession.newID();
     await dbReference.child(sessionId).set({
       "id": sessionId,
@@ -111,7 +108,7 @@ class ScrumPokerFirebase {
 
   void getScrumSession(String sessionId) async {
     await authenticate.signInWithEmailAndPassword(
-        email: "jay@scrumpoker.com", password: "asdfgh");
+        email: "jay@scrumpoker.com", password: "JSDNPV");
     DatabaseEvent event =
         await dbReference.child(sessionId).once(DatabaseEventType.value);
 
@@ -134,7 +131,7 @@ class ScrumPokerFirebase {
       required String participantName,
       bool owner = false}) async {
     await authenticate.signInWithEmailAndPassword(
-        email: "jay@scrumpoker.com", password: "asdfgh");
+        email: "jay@scrumpoker.com", password: "JSDNPV");
     
    
 

@@ -97,7 +97,7 @@ Widget getHeader(
                       child: Tooltip(
                         message: "SHARE LINK AND ENJOY THE POKER",
                         child: Wrap(
-                          runSpacing: 10,
+                          runSpacing: 10.0,
                           spacing: 10.0,
                           children: [
                             Icon(
