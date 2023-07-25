@@ -10,7 +10,7 @@ import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 import 'package:share/share.dart';
 
-import '../../../widgets/ui/style.dart';
+
 
 Widget buildDisplayStoryPanel(
     BuildContext context,
@@ -60,7 +60,7 @@ Widget getHeader(
                 ],
               ),
               if (participant?.isOwner == false)
-                //Share button
+            
                 TextButton(
                   child: Tooltip(
                     message: "SHARE LINK AND ENJOY THE POKER",
@@ -92,7 +92,7 @@ Widget getHeader(
                   runSpacing: 0,
                   spacing: 0,
                   children: [
-                    //Share button
+                   
                     TextButton(
                       child: Tooltip(
                         message: "SHARE LINK AND ENJOY THE POKER",
