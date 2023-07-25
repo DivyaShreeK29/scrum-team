@@ -38,12 +38,11 @@ dependencies:
   firebase_core: ^2.4.1
   firebase_database: ^10.0.9
   google_fonts: ^5.1.0
-  badges: ^2.0.1
-  share: ^2.0.4
   connectivity: ^3.0.6
   share: ^2.0.4
   badges: ^2.0.1
   playing_cards: ^0.3.1+9
+  simple_speed_dial: ^0.1.7
 
 dev_dependencies:
   flutter_test:

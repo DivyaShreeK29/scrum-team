@@ -22,6 +22,7 @@ import 'package:scrum_poker/rest/firebase_db.dart';
 //import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'dart:html';
+import 'package:simple_speed_dial/simple_speed_dial.dart';
 
 import 'package:scrum_poker/widgets/ui/style.dart';
 import 'package:badges/badges.dart' as badges;
@@ -33,8 +34,6 @@ import '../../widgets/ui/style.dart';
 //import 'dart:html' as html;
 
 //html.Element? appElement; // Reference to your app element
-
-
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
@@ -63,7 +62,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool iconLabel = false;
   // bool exitPage = false;
 
-  
   bool isOfflineProgressIndicator = false;
   //ConnectivityService connectivityService = ConnectivityService();
 
@@ -301,30 +299,76 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         floatingActionButton: getDeviceWidth(context) < 600
             ? SizedBox(
                 width: 90,
-                child: FloatingActionButton(
-                  tooltip: "Press to Select a Card",
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return ScrumCardList(
-                            onCardSelected: onCardSelected,
-                            resetCardList: this.resetParticipantScrumCards,
-                            isLocked: this.showCards);
+                child: SpeedDial(
+                  child: 
+                  // iconLabel
+                          // ? Text(
+                          //     iconData,
+                          //     style: TextStyle(fontSize: 25.0),
+                          //   )
+                          // : 
+                          ImageIcon(
+                              AssetImage(
+                                  "assets/images/playing_cards_icon.png"),
+                              size: 30.0,
+                            ),
+                  speedDialChildren: [
+                    SpeedDialChild(
+                      closeSpeedDialOnPressed: false,
+                      child: !iconLabel?Icon(Icons.touch_app,color: Colors.white,):Text(
+                              iconData,
+                              style: TextStyle(fontSize: 25.0),
+                            ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return ScrumCardList(
+                                onCardSelected: onCardSelected,
+                                resetCardList: this.resetParticipantScrumCards,
+                                isLocked: this.showCards);
+                          },
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                        );
                       },
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                    );
-                  },
-                  child: iconLabel
-                      ? Text(
-                          iconData,
-                          style: TextStyle(fontSize: 25.0),
-                        )
-                      : ImageIcon(
-                          AssetImage("assets/images/playing_cards_icon.png"),
-                          size: 30.0,
-                        ),
+                      // child: iconLabel
+                      //     ? Text(
+                      //         iconData,
+                      //         style: TextStyle(fontSize: 25.0),
+                      //       )
+                      //     : ImageIcon(
+                      //         AssetImage(
+                      //             "assets/images/playing_cards_icon.png"),
+                      //         size: 30.0,
+                      //       ),
+                    ),
+                  ],
+                  // child: FloatingActionButton(
+                  //   tooltip: "Press to Select a Card",
+                  //   onPressed: () {
+                  //     showModalBottomSheet(
+                  //       context: context,
+                  //       builder: (context) {
+                  //         return ScrumCardList(
+                  //             onCardSelected: onCardSelected,
+                  //             resetCardList: this.resetParticipantScrumCards,
+                  //             isLocked: this.showCards);
+                  //       },
+                  //       backgroundColor:
+                  //           Theme.of(context).scaffoldBackgroundColor,
+                  //     );
+                  //   },
+                  //   child: iconLabel
+                  //       ? Text(
+                  //           iconData,
+                  //           style: TextStyle(fontSize: 25.0),
+                  //         )
+                  //       : ImageIcon(
+                  //           AssetImage("assets/images/playing_cards_icon.png"),
+                  //           size: 30.0,
+                  //         ),
+                  // ),
                 ),
               )
             : null,

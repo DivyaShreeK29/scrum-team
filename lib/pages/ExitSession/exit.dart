@@ -43,7 +43,6 @@ class ExitPage extends StatelessWidget {
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
-                    print("asdf");
                     SystemNavigator.pop();
                   },
                 ),
