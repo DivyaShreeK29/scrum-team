@@ -17,13 +17,11 @@ Widget pageHeader(BuildContext context, ScrumSession? session,
     ScrumSessionParticipant? participant, AppRouterDelegate? routerDelegate) {
   return AppBar(
     actions: [
-      //SizedBox(width: 200),
       CancelButton(session, participant, routerDelegate),
     ],
     centerTitle: false,
     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       heading6(context: context, text: "Scrum Poker", color: Colors.white),
-      //Divider()
     ]),
     elevation: 0.0,
     bottomOpacity: 0.0,
