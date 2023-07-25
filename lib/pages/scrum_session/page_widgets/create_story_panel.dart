@@ -4,7 +4,7 @@ import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 
-import './display_story_panel.dart';
+
 
 Widget buildCreateStoryPanel(BuildContext context) {
   TextEditingController storyId = TextEditingController();
@@ -40,8 +40,9 @@ Widget _createStoryButtonsPanel(
     BuildContext context, storyId, storyTitle, storyDescription) {
   return Wrap(runSpacing: 10.0, children: [
     ElevatedButton(
-            onPressed: () {
-              ScrumPokerFirebase.instance.setActiveStory(
+            onPressed: () async {
+              ScrumPokerFirebase spdb = await ScrumPokerFirebase.instance;
+              spdb.setActiveStory(
                   storyId.text, storyTitle.text, storyDescription.text);
             },
             child:

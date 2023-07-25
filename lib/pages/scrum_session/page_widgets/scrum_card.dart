@@ -3,6 +3,8 @@ import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
+
+
 class ScrumCard extends StatefulWidget {
   final dynamic onCardSelected;
   final String value;
@@ -21,6 +23,8 @@ class ScrumCard extends StatefulWidget {
 class _ScrumCardState extends State<ScrumCard> {
   void onCardClicked() {
     widget.onCardSelected(widget.value);
+
+    getDeviceWidth(context) < 600 ? Navigator.pop(context) : null;
   }
 
   @override
@@ -29,7 +33,7 @@ class _ScrumCardState extends State<ScrumCard> {
       duration: Duration(milliseconds: 300),
       height: (widget.isSelected ? 200 : 125),
       width: (widget.isSelected) ? 145 : 95,
-       curve: Curves.linearToEaseOut,
+      curve: Curves.linearToEaseOut,
       child: GestureDetector(
           child: Card(
               elevation: 3.0,
@@ -59,7 +63,6 @@ class _ScrumCardState extends State<ScrumCard> {
                                           context: context, text: widget.value)
                                       .color(Colors.white)),
                               radius: widget.isSelected ? 55 : 35,
-                             
                             ))))
                   ])),
           onTap: onCardClicked),

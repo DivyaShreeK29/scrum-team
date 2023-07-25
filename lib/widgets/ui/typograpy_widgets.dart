@@ -9,6 +9,7 @@ Text heading6(
       text: text, textStyle: TextStyles.heading6, color: color);
 }
 
+
 Text heading5(
     {required context, required String text, Color color: Colors.black}) {
   return _getStyledText(

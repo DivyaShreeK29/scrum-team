@@ -1,19 +1,58 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
+import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'dart:html';
+
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../../widgets/ui/style.dart';
+
+//import '../connectivity/connectivity.dart';
+// ignore: avoid_web_libraries_in_flutter
+//import 'dart:html' as html;
+
+//html.Element? appElement; // Reference to your app element
+
+void showToastMessage(String msg) {
+  // Replace with your own toast implementation or package
+
+  Fluttertoast.showToast(
+    msg: msg,
+    toastLength:
+        Toast.LENGTH_SHORT, // Duration for which the toast should be visible
+    gravity: ToastGravity
+        .BOTTOM_RIGHT, // Position of the toast message on the screen
+    timeInSecForIosWeb:
+        5, // Specific to iOS/web platforms, the duration for which the toast should be visible
+    backgroundColor: Colors.black87, // Background color of the toast message
+    textColor: Colors.white, // Text color of the toast message
+    fontSize: 16.0, // Font size of the toast message
+  );
+ 
+}
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
   final String id;
+  final AppRouterDelegate? routerDelegate;
 
-  ScrumSessionPage({Key? key, required this.id}) : super(key: key);
+  ScrumSessionPage({Key? key, required this.id, this.routerDelegate})
+      : super(key: key);
 
   @override
   _ScrumSessionPageState createState() => _ScrumSessionPageState(id);
@@ -23,43 +62,134 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   String? sessionId;
   ScrumSession? scrumSession;
   Story? activeStory;
+  AppRouterDelegate? routerDelegater;
   bool showNewStoryInput = false;
   bool showCards = false;
   bool resetParticipantScrumCards = false;
+  bool exitPage = false;
+  final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  String iconData = "";
+  bool iconLabel = false;
+  bool isOfflineProgressIndicator = false;
+
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
-    ScrumPokerFirebase.instance.onSessionInitialized(
+  }
+
+  void initializeScrumSession() async {
+    ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+    spfb.onSessionInitialized(
         scrumSessionInitializationSuccessful, scrumSessionInitializationFailed);
+    spfb.getScrumSession(widget.id);
   }
 
   @override
   void initState() {
     super.initState();
-    ScrumPokerFirebase.instance.getScrumSession(sessionId!);
-    //set callbacks into the session
+    initializeScrumSession();
+    
+
+    getConnectivity();
+    browserEventListeners();
+    
+  }
+
+  void getConnectivity() {
+    Connectivity().onConnectivityChanged.listen((result) {
+      bool isConnected = result != ConnectivityResult.none;
+     
+
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          isOfflineProgressIndicator = !isConnected;
+        });
+
+        showSnackbar(
+            "${scrumSession?.activeParticipant?.name} lost network connection");
+        Timer(Duration(seconds: 60), () {
+          print("Executed after 1 minute");
+          if (!isConnected) {
+            print("Executed after 1 minute if olgade");
+            this.onNewParticipantRemoved(scrumSession!.activeParticipant!);
+          }
+        });
+      }
+      if (result == ConnectivityResult.wifi) {
+        isOfflineProgressIndicator = !isConnected;
+        showSnackbar(
+            "${scrumSession!.activeParticipant?.name} restored network connection");
+
+        () async {
+          ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+          DataSnapshot participantsJson = await spfb.participants;
+          Map _participantsListJson = participantsJson.value as Map;
+
+          var listOfParticipants = _participantsListJson.values
+              .map((participant) =>
+                  ScrumSessionParticipant.fromJSON(participant))
+              .toList();
+
+          print("values = ${participantsJson.value}");
+
+          listOfParticipants.forEach((element) {
+            print("in for each ${element.toJson()}");
+          });
+          print(listOfParticipants);
+          setState(() {
+            scrumSession!.participants = listOfParticipants;
+          });
+        }();
+      }
+      setState(() {
+        this.scrumSession?.updateParticipantConnectivity(context, isConnected);
+      });
+    });
+  }
+
+  void browserEventListeners() {
+    window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload get triggered");
+
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      spfb.removeFromExistingSession();
+    });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
     setState(() {
       this.scrumSession = scrumSession;
-      ScrumPokerFirebase.instance.onNewParticipantAdded(onNewParticipantAdded);
-      ScrumPokerFirebase.instance.onNewStorySet(onNewStorySet);
-      ScrumPokerFirebase.instance
-          .onStoryEstimateChanged(onStoryEstimatesChanged);
-      ScrumPokerFirebase.instance.onShowCard(onShowCardsEventTriggered);
+      ScrumPokerFirebase.instance.then((ScrumPokerFirebase spfb) {
+        spfb.onNewParticipantAdded(onNewParticipantAdded);
+        spfb.onNewStorySet(onNewStorySet);
+        spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
+        spfb.onShowCard(onShowCardsEventTriggered);
+        spfb.onEndSession(onEndSession);
+        spfb.onNewParticipantRemoved(onNewParticipantRemoved);
+      });
     });
   }
 
   void scrumSessionInitializationFailed(error) {
-    // ignore: todo
-    //todo: implement erro handling
+  
   }
 
   void onNewParticipantAdded(newParticipant) {
     setState(() {
       this.scrumSession?.addParticipant(newParticipant);
     });
+  }
+
+  void onNewParticipantRemoved(ScrumSessionParticipant? oldParticipant) {
+   
+    setState(() {
+      this.scrumSession?.removeParticipant(oldParticipant!);
+      showSnackbar('${oldParticipant!.name} left the session');
+    });
+  }
+
+  void onEndSession() {
+    widget.routerDelegate!.pushRoute("/session-ended");
   }
 
   void onNewStorySet(story) {
@@ -71,18 +201,19 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         participant.currentEstimate = '';
       });
       this.resetParticipantScrumCards = true;
+      this.iconLabel = false;
     });
   }
 
   void onNewStoryPressed() {
-    //  ScrumPokerFirebase.instance.setActiveStory(null, null, null);
     setState(() {
       this.showNewStoryInput = true;
     });
   }
 
   void onShowCardsButtonPressed() {
-    ScrumPokerFirebase.instance.showCard();
+    ScrumPokerFirebase.instance
+        .then((ScrumPokerFirebase spfb) => spfb.showCard());
   }
 
   void onShowCardsEventTriggered(bool value) {
@@ -93,11 +224,13 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   void onCardSelected(String selectedValue) {
     this.resetParticipantScrumCards = false;
-    ScrumPokerFirebase.instance.setStoryEstimate(selectedValue);
+    ScrumPokerFirebase.instance.then(
+        (ScrumPokerFirebase spfb) => spfb.setStoryEstimate(selectedValue));
+    iconLabel = true;
+    iconData = selectedValue;
   }
 
   onStoryEstimatesChanged(participantEstimates) {
-    print(participantEstimates);
     if (participantEstimates != null && participantEstimates is Map) {
       var estimateJson = participantEstimates.values;
       var participants = scrumSession?.participants ?? [];
@@ -117,17 +250,71 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     }
   }
 
+  void showSnackbar(String msg) {
+    scaffoldMessengerKey.currentState!.clearSnackBars();
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            
+            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(child: AnimatedContainer(
-        duration: Duration(microseconds: 300),
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: buildScrumSessionPage(context)));
+    return Material(
+        child: ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Scaffold(
+        body: AnimatedContainer(
+            duration: Duration(microseconds: 300),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: buildScrumSessionPage(context)),
+        floatingActionButton: getDeviceWidth(context) < 600
+            ? SizedBox(
+                width: 90,
+                child: FloatingActionButton(
+                  tooltip: "Press to Select a Card",
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return ScrumCardList(
+                            onCardSelected: onCardSelected,
+                            resetCardList: this.resetParticipantScrumCards,
+                            isLocked: this.showCards);
+                      },
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                    );
+                  },
+                  child: iconLabel
+                      ? Text(
+                          iconData,
+                          style: TextStyle(fontSize: 25.0),
+                        )
+                      : ImageIcon(
+                          AssetImage("assets/images/playing_cards_icon.png"),
+                          size: 30.0,
+                        ),
+                ),
+              )
+            : null,
+      ),
+    ));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(children: [
-      pageHeader(context),
+      pageHeader(context, scrumSession, scrumSession?.activeParticipant,
+          widget.routerDelegate),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
               context,
@@ -144,10 +331,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         Divider(
           color: Colors.white38,
         ).margin(top: 8.0, bottom: 8.0),
-        ScrumCardList(
-            onCardSelected: onCardSelected,
-            resetCardList: this.resetParticipantScrumCards,
-            isLocked: this.showCards)
+        getDeviceWidth(context) > 600
+            ? ScrumCardList(
+                onCardSelected: onCardSelected,
+                resetCardList: this.resetParticipantScrumCards,
+                isLocked: this.showCards)
+            : Text("")
       ])))
     ]);
   }
@@ -156,8 +345,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants
-                .map((participant) =>
-                    participantCard(context, participant, showEstimates))
+                .map((participant) => participantCard(context, participant,
+                    showEstimates, isOfflineProgressIndicator))
                 .toList() ??
             []);
   }

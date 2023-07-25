@@ -1,10 +1,13 @@
+
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:uuid/uuid.dart';
 
-///  Represents a Scrum Session
+// Represents a Scrum Session
 
 class ScrumSession {
   String? name;
@@ -48,6 +51,44 @@ class ScrumSession {
     }
   }
 
+  void removeParticipant(ScrumSessionParticipant participant) {
+    if (this.participants.length == 1) {}
+    this.participants.remove(this
+        .participants
+        .firstWhere((element) => (element.id) == participant.id));
+
+    
+  }
+
+  void updateParticipantConnectivity(BuildContext context, bool isConnected) {
+  
+    activeParticipant?.connectivityController = isConnected;
+
+    if (!activeParticipant!.connectivityController) {
+      
+      showAboutDialog(context);
+    } else {
+      dismissDialog(context);
+     
+    }
+  }
+
+  void showAboutDialog(
+    BuildContext context,
+  ) {
+    showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('You lost your network connection'),
+              content: const Text('Trying to reconnect '),
+            ));
+  }
+
+  void dismissDialog(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
@@ -73,9 +114,6 @@ class ScrumSession {
 
 
 
-// main() {
-//   ScrumSession session = ScrumSession(
-//       name: "FirstSession", startTime: DateTime.now());
-//   session.addParticipant(ScrumSessionParticipant("Jay", true));
-//   print(session.toJson());
-// }
+
+
+

@@ -18,15 +18,19 @@ class JoinSessionFromLink extends StatefulWidget {
 class _JoinSessionFromLinkState extends State<JoinSessionFromLink> {
   ScrumSession? scrumSession;
 
-  _JoinSessionFromLinkState() {
-    ScrumPokerFirebase.instance.onSessionInitialized(
+  _JoinSessionFromLinkState();
+
+  void initializeScrumSession() async {
+    ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+    spfb.onSessionInitialized(
         scrumSessionInitializationSuccessful, scrumSessionInitializationFailed);
+    spfb.getScrumSession(widget.id);
   }
 
   @override
   void initState() {
     super.initState();
-    ScrumPokerFirebase.instance.getScrumSession(widget.id);
+    initializeScrumSession();
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
@@ -43,15 +47,19 @@ class _JoinSessionFromLinkState extends State<JoinSessionFromLink> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        duration: Duration(microseconds: 300),
-        color: Colors.blue[900],
-        child: Center(
-            child: Wrap(children: [
-          joinAnExistingSession(
-              context: context,
-              routerDelegate: widget.routerDelegate,
-              joinWithLink: true,
-              scrumSession: this.scrumSession)
-        ])));
+      duration: Duration(microseconds: 300),
+      color: Colors.blue[900],
+      child: Center(
+        child: Wrap(
+          children: [
+            joinAnExistingSession(
+                context: context,
+                routerDelegate: widget.routerDelegate,
+                joinWithLink: true,
+                scrumSession: this.scrumSession)
+          ],
+        ),
+      ),
+    );
   }
 }
